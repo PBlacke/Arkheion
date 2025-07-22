@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@100;300;400;500;600;700;800;900&family=Raleway:wght@100;200;300;400;500;600;700;800&family=Sofia&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@100;300;400;500;600;700;800;900&family=Montserrat&family=Raleway:wght@100;200;300;400;500;600;700;800&family=Sofia&display=swap');
+
+html,body,header{
+    font-family: "Montserrat", sans-serif;
+    scroll-behavior: smooth;
+}
+.navbar{
+    z-index: 99;
+    background: #fff;
+}
+.navbar p{
+    margin-top: 10px;
+    color: white;
+}
+.navbar #phone{
+    color: white;
+    width: 45px;
+    height: 45px;
+}
+.fixed-top{
+    padding: 20px 0 20px 8px;
+}
+.fixed-top .navbar-nav li a{
+    font-size: 15px;
+    color: black !important;
+}
+.fixed-top .navbar-nav li a:hover{
+    background-color: cadetblue;
+   border-radius: 30px;
+   color: white !important;
+}
+
+@media screen and (max-width:767px){
+    #navbar-dark{
+        background-color: #111 !important;
+    }
+}
+#main-bar{
+    position: absolute;
+    width: 100%;
+    position: fixed;
+    top: 12%;
+    z-index: 2;
+    padding: 10px;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+}
+#main-bar .nav-item{
+    margin-left: 10px;
+    font-size: 17px;
+    padding: 5px;
+}
+#main-bar .nav-link{
+    color: black;
+    font-weight: 500;
+    padding: 10px;
+    margin-left: 10px;
+}
+#main-bar .nav-link:hover{
+    border-bottom:2px solid cadetblue;
+}
+#main-bar img{
+    width: 45px;
+    height: 45px;
+}
+#searchbtn{
+    background-color:  rgb(5, 115, 158);
+    color: wheat;
+}
+#searchbtn:hover{
+    background-color: rgb(7, 146, 201);
+}
+.welcome-container {
+    position: relative;
+    background-color: #f8f9fa;
+    padding: 20px;
+    margin-top: 190px;
+    box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.5);
+    height: 100%;
+}
+
+.welcome-box {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.welcome-box img{
+    max-width: 100px;
+    border-radius: 8px; /* Add rounded corners to the image */
+    margin-right: 20px;
+}
+.project-details-container {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(128, 0, 0, 0.89);
+    color: #fff;
+    padding: 20px;
+    box-sizing: border-box; 
+    z-index:1;
+}
+.project-details-container:hover p{
+    color: white;
+}
+.project-details-container{
+    flex-grow: 1;
+}
+.project-details-container h1{
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+.projectdets p{
+    font-size: 1rem;
+    color: #555;
+}
+
+.project-box {
+    position: relative;
+    overflow: hidden;
+}
+
+.project-img {
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s;
+}
+
+.project-box:hover .project-img {
+    transform: scale(1.1);
+}
+
+.dropdown:hover .dropdown-menu{
+    display: block;
+}
+.dropdown-item:hover{
+    background-color: rgb(63, 115, 212);
+    color: white;
+}
+footer{
+    font-size: 20px;
+    text-align: center;
+    font-weight: bolder;
+    font-family: "Montserrat", sans-serif;
+    background: maroon;
+    margin-top: 50px;
+}
+.footerContainer{
+    width: 100%;
+    padding: 70px 30px 20px;
+    height: 300px;
+}
+.socialmedia{
+    display: flex;
+    justify-content: center;
+}
+.socialmedia a{
+    padding: 10px;
+    text-decoration: none;
+    background-color: white;
+    margin: 10px;
+    border-radius: 50%;
+}
+.socialmedia a i{
+    font-size: 2em;
+    color: #111;
+    opacity: 0.9;
+}
+.socialmedia a:hover{
+    background-color: maroon;
+    transition: 0.5s;
+}
+.socialmedia a i:hover{
+    color: white;
+    transition: 0.5s;
+}
+.footerNav{
+    margin: 20px 0;
+}
+.footerNav ul{
+    display: flex;
+    justify-content: center;
+    list-style-type: none;
+}
+.footerNav ul li{
+    color: white;
+    font-size: 15px;
+    font-family: 'Monsterrat', sans-serif;
+    padding: 20px;
+    align-items: center;
+}
+.footerBot{
+    background-color: #510400;
+    padding: 20px;
+    text-align: center;
+    color: whitesmoke;
+    font-size: 18px;
+}
+.designer{
+    letter-spacing: 1px;
+    opacity: 0.7;
+    margin: 0px 5px;
+}
+
+@media (max-width: 700px){
+    .footerNav{
+        flex-direction: column;
+    }
+    .footerNav ul li{
+        width: 100%;
+        text-align: center;
+        margin: 10px;
+    }
+}

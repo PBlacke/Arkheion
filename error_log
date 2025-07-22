@@ -1,0 +1,21 @@
+[12-Dec-2023 14:53:17 UTC] PHP Warning:  mysqli::__construct(): (HY000/1045): Access denied for user 'root'@'localhost' (using password: NO) in /home/tatsnfqv/archiving.tatsuyacarrental.com/connection.php on line 16
+[12-Dec-2023 14:53:21 UTC] PHP Warning:  mysqli::__construct(): (HY000/1045): Access denied for user 'root'@'localhost' (using password: NO) in /home/tatsnfqv/archiving.tatsuyacarrental.com/connection.php on line 16
+[12-Dec-2023 14:53:25 UTC] PHP Warning:  mysqli::__construct(): (HY000/1045): Access denied for user 'root'@'localhost' (using password: NO) in /home/tatsnfqv/archiving.tatsuyacarrental.com/connection.php on line 16
+[12-Dec-2023 14:53:33 UTC] PHP Warning:  mysqli::__construct(): (HY000/1045): Access denied for user 'root'@'localhost' (using password: NO) in /home/tatsnfqv/archiving.tatsuyacarrental.com/connection.php on line 16
+[12-Dec-2023 14:57:40 UTC] PHP Warning:  Undefined variable $department in /home/tatsnfqv/archiving.tatsuyacarrental.com/registration.php on line 354
+[12-Dec-2023 14:57:40 UTC] PHP Warning:  Undefined variable $department in /home/tatsnfqv/archiving.tatsuyacarrental.com/registration.php on line 370
+[12-Dec-2023 14:57:40 UTC] PHP Warning:  Undefined variable $department in /home/tatsnfqv/archiving.tatsuyacarrental.com/registration.php on line 370
+[12-Dec-2023 14:57:40 UTC] PHP Warning:  Undefined variable $department in /home/tatsnfqv/archiving.tatsuyacarrental.com/registration.php on line 370
+[12-Dec-2023 14:57:40 UTC] PHP Warning:  Undefined variable $department in /home/tatsnfqv/archiving.tatsuyacarrental.com/registration.php on line 370
+[12-Dec-2023 15:21:07 UTC] PHP Warning:  readfile(jpg2pdf.pdf): Failed to open stream: No such file or directory in /home/tatsnfqv/archiving.tatsuyacarrental.com/download.php on line 20
+[12-Dec-2023 15:21:40 UTC] PHP Warning:  readfile(jpg2pdf.pdf): Failed to open stream: No such file or directory in /home/tatsnfqv/archiving.tatsuyacarrental.com/download.php on line 20
+[12-Dec-2023 15:21:54 UTC] PHP Warning:  readfile(jpg2pdf.pdf): Failed to open stream: No such file or directory in /home/tatsnfqv/archiving.tatsuyacarrental.com/download.php on line 20
+[12-Dec-2023 15:24:26 UTC] PHP Warning:  Undefined variable $department in /home/tatsnfqv/archiving.tatsuyacarrental.com/registration.php on line 354
+[12-Dec-2023 15:24:26 UTC] PHP Warning:  Undefined variable $department in /home/tatsnfqv/archiving.tatsuyacarrental.com/registration.php on line 370
+[12-Dec-2023 15:25:35 UTC] PHP Warning:  Undefined variable $department in /home/tatsnfqv/archiving.tatsuyacarrental.com/registration.php on line 354
+[12-Dec-2023 15:25:35 UTC] PHP Warning:  Undefined variable $department in /home/tatsnfqv/archiving.tatsuyacarrental.com/registration.php on line 370
+[12-Dec-2023 15:27:14 UTC] PHP Warning:  Undefined variable $department in /home/tatsnfqv/archiving.tatsuyacarrental.com/registration.php on line 354
+[12-Dec-2023 15:27:14 UTC] PHP Warning:  Undefined variable $department in /home/tatsnfqv/archiving.tatsuyacarrental.com/registration.php on line 370
+[12-Dec-2023 15:28:25 UTC] PHP Warning:  readfile(jpg2pdf.pdf): Failed to open stream: No such file or directory in /home/tatsnfqv/archiving.tatsuyacarrental.com/download.php on line 20
+[12-Dec-2023 15:39:20 UTC] PHP Warning:  Undefined variable $searchEmployeeID in /home/tatsnfqv/archiving.tatsuyacarrental.com/searchdepartment.php on line 342
+[12-Dec-2023 15:39:29 UTC] PHP Warning:  Undefined variable $searchEmployeeID in /home/tatsnfqv/archiving.tatsuyacarrental.com/searchcurriculum.php on line 343
