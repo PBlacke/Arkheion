@@ -1,6 +1,6 @@
 <?php
 // Include the connection file
-require 'connection.php';
+require 'config/connection.php';
 
 session_start();
 

@@ -7,62 +7,47 @@ CREATE TABLE
         `email` VARCHAR(100) NOT NULL UNIQUE,
         `password` VARCHAR(255) NOT NULL,
         `role` ENUM ('admin', 'faculty', 'student') NOT NULL,
+        `status` ENUM ('active', 'inactive', 'pending') DEFAULT 'active',
         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
 CREATE TABLE
-    IF NOT EXISTS `curriculum` (
-        `id` int (11) NOT NULL AUTO_INCREMENT,
-        `department` varchar(255) NOT NULL,
-        `curriculum` varchar(255) DEFAULT NULL,
-        `status` varchar(255) DEFAULT 'default_value',
-        `status2` varchar(255) DEFAULT NULL,
-        PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB AUTO_INCREMENT = 51 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
-
-CREATE TABLE
-    IF NOT EXISTS `department` (
-        `id` int (11) NOT NULL AUTO_INCREMENT,
-        `department_name` varchar(255) NOT NULL,
-        `status` varchar(255) NOT NULL,
-        PRIMARY KEY (`id`)
-    );
-
-CREATE TABLE
     IF NOT EXISTS `faculty` (
-        `id` int (11) NOT NULL AUTO_INCREMENT,
-        `first_name` varchar(100) DEFAULT NULL,
-        `middle_name` varchar(100) DEFAULT NULL,
-        `last_name` varchar(100) DEFAULT NULL,
-        `suffix` varchar(20) DEFAULT NULL,
-        `birthdate` date DEFAULT NULL,
-        `address` text DEFAULT NULL,
-        `username` varchar(255) NOT NULL,
-        `email` varchar(255) NOT NULL,
-        `password` varchar(255) NOT NULL,
-        `department` varchar(255) NOT NULL,
-        `employee_id` varchar(255) NOT NULL,
-        PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB AUTO_INCREMENT = 28 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
+        `id` INT PRIMARY KEY AUTO_INCREMENT,
+        `user_id` INT NOT NULL UNIQUE,
+        `first_name` VARCHAR(100) DEFAULT NULL,
+        `middle_name` VARCHAR(100) DEFAULT NULL,
+        `last_name` VARCHAR(100) DEFAULT NULL,
+        `suffix` VARCHAR(20) DEFAULT NULL,
+        `birthdate` DATE DEFAULT NULL,
+        `address` TEXT DEFAULT NULL,
+        `department` VARCHAR(255) NOT NULL,
+        `employee_id` VARCHAR(255) NOT NULL UNIQUE,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 CREATE TABLE
-    IF NOT EXISTS `files` (
-        `id` int (11) NOT NULL AUTO_INCREMENT,
-        `title` varchar(255) NOT NULL,
-        `description` text DEFAULT NULL,
-        `filename` varchar(255) NOT NULL,
-        `file_path` varchar(255) NOT NULL,
-        `uploader` varchar(255) NOT NULL,
-        `email` varchar(255) NOT NULL,
-        `department` varchar(100) NOT NULL,
-        `status` enum ('Pending', 'Published', 'Rejected', 'Unpublish') NOT NULL DEFAULT 'Pending',
-        `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-        `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-        `year` varchar(10) DEFAULT NULL,
-        `curriculum` varchar(100) DEFAULT NULL,
-        `image` varchar(255) DEFAULT NULL,
-        PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB AUTO_INCREMENT = 4 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
+    IF NOT EXISTS `students` (
+        `id` INT PRIMARY KEY AUTO_INCREMENT,
+        `user_id` INT NOT NULL UNIQUE,
+        `first_name` VARCHAR(50) NOT NULL,
+        `middle_name` VARCHAR(50),
+        `last_name` VARCHAR(50) NOT NULL,
+        `suffix` VARCHAR(10),
+        `date_of_birth` DATE NOT NULL,
+        `address` TEXT NOT NULL,
+        `educational_attainment` ENUM (
+            'Elementary',
+            'High School',
+            'Senior High School',
+            'College',
+            'Masters',
+            'Doctorate'
+        ) NOT NULL,
+        `department_id` INT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (department_id) REFERENCES department (id)
+    );
 
 CREATE TABLE
     IF NOT EXISTS `pending_students` (
@@ -91,27 +76,41 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    IF NOT EXISTS `students` (
-        `id` INT PRIMARY KEY AUTO_INCREMENT,
-        `user_id` INT NOT NULL UNIQUE,
-        `first_name` VARCHAR(50) NOT NULL,
-        `middle_name` VARCHAR(50),
-        `last_name` VARCHAR(50) NOT NULL,
-        `suffix` VARCHAR(10),
-        `date_of_birth` DATE NOT NULL,
-        `address` TEXT NOT NULL,
-        `educational_attainment` ENUM (
-            'Elementary',
-            'High School',
-            'Senior High School',
-            'College',
-            'Masters',
-            'Doctorate'
-        ) NOT NULL,
-        `department_id` INT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-        FOREIGN KEY (department_id) REFERENCES department (id)
+    IF NOT EXISTS `curriculum` (
+        `id` int (11) NOT NULL AUTO_INCREMENT,
+        `department` varchar(255) NOT NULL,
+        `curriculum` varchar(255) DEFAULT NULL,
+        `status` varchar(255) DEFAULT 'default_value',
+        `status2` varchar(255) DEFAULT NULL,
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB AUTO_INCREMENT = 51 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
+
+CREATE TABLE
+    IF NOT EXISTS `department` (
+        `id` int (11) NOT NULL AUTO_INCREMENT,
+        `department_name` varchar(255) NOT NULL,
+        `status` varchar(255) NOT NULL,
+        PRIMARY KEY (`id`)
     );
+
+CREATE TABLE
+    IF NOT EXISTS `files` (
+        `id` int (11) NOT NULL AUTO_INCREMENT,
+        `title` varchar(255) NOT NULL,
+        `description` text DEFAULT NULL,
+        `filename` varchar(255) NOT NULL,
+        `file_path` varchar(255) NOT NULL,
+        `uploader` varchar(255) NOT NULL,
+        `email` varchar(255) NOT NULL,
+        `department` varchar(100) NOT NULL,
+        `status` enum ('Pending', 'Published', 'Rejected', 'Unpublish') NOT NULL DEFAULT 'Pending',
+        `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+        `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+        `year` varchar(10) DEFAULT NULL,
+        `curriculum` varchar(100) DEFAULT NULL,
+        `image` varchar(255) DEFAULT NULL,
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB AUTO_INCREMENT = 4 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
 
 CREATE TABLE
     IF NOT EXISTS `notifications` (
