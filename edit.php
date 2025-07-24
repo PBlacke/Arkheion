@@ -2,7 +2,7 @@
 // edit.php
 
 // Include the connection file
-require 'connection.php';
+require 'config/connection.php';
 
 // Start the session
 session_start();
@@ -54,104 +54,115 @@ $conn->close();
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Arkheion</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="shortcut icon" type="x-icon" href="LOGO.png">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif}
-</style>
-</head>
-<body class="w3-light-grey">
-
-<!-- Page Container -->
-<div class="w3-content w3-margin-top" style="max-width:1400px;">
-
-  <!-- The Grid -->
-  <div class="w3-row-padding">
-  
-    <?php include 'admin_nav.php'; ?>
-
-    <!-- Right Column -->
-    <div class="w3-twothird">
-
+    <title>Arkheion</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="x-icon" href="LOGO.png">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-
-        .w3-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .w3-card {
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            color: red;
-        }
-
-        form {
-            text-align: left;
-            margin-top: 20px;
-        }
-
-        label {
-            display: block;
-            margin-top: 10px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
+        html,
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Roboto", sans-serif
         }
     </style>
+</head>
 
-    <?php
-        // Assume you have established a database connection in your connection.php file
-        require 'connection.php';
+<body class="w3-light-grey">
 
-        // Check if the form is submitted
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            // Retrieve form data and sanitize
-            $title = mysqli_real_escape_string($conn, $_POST["title"]);
-            $description = mysqli_real_escape_string($conn, $_POST["description"]);
-            $uploader = mysqli_real_escape_string($conn, $_POST["uploader"]);
-            $email = mysqli_real_escape_string($conn, $_POST["email"]);
-            $year = mysqli_real_escape_string($conn, $_POST["year"]);
-            $department = mysqli_real_escape_string($conn, $_POST["department"]);
-            $curriculum = mysqli_real_escape_string($conn, $_POST["curriculum"]);
-            $status = mysqli_real_escape_string($conn, $_POST["status"]);
-            $file_path = mysqli_real_escape_string($conn, $_POST["file_path"]); // Add this line
+    <!-- Page Container -->
+    <div class="w3-content w3-margin-top" style="max-width:1400px;">
 
-            // Assuming you have a unique identifier for the record, e.g., file_id
-            $id = isset($_GET['id']) ? $_GET['id'] : null;
+        <!-- The Grid -->
+        <div class="w3-row-padding">
 
-            // Update the record in the database
-            $updateQuery = "UPDATE files SET 
+            <?php include 'admin_nav.php'; ?>
+
+            <!-- Right Column -->
+            <div class="w3-twothird">
+
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                    }
+
+                    .w3-container {
+                        max-width: 800px;
+                        margin: 0 auto;
+                    }
+
+                    .w3-card {
+                        border-radius: 10px;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }
+
+                    h2 {
+                        color: red;
+                    }
+
+                    form {
+                        text-align: left;
+                        margin-top: 20px;
+                    }
+
+                    label {
+                        display: block;
+                        margin-top: 10px;
+                    }
+
+                    input {
+                        width: 100%;
+                        padding: 10px;
+                        margin-top: 5px;
+                        margin-bottom: 15px;
+                        box-sizing: border-box;
+                    }
+
+                    button {
+                        background-color: #4CAF50;
+                        color: white;
+                        padding: 10px 15px;
+                        border: none;
+                        border-radius: 5px;
+                        cursor: pointer;
+                    }
+
+                    button:hover {
+                        background-color: #45a049;
+                    }
+                </style>
+
+                <?php
+                // Assume you have established a database connection in your config/connection.php file
+                require 'config/connection.php';
+
+                // Check if the form is submitted
+                if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                    // Retrieve form data and sanitize
+                    $title = mysqli_real_escape_string($conn, $_POST["title"]);
+                    $description = mysqli_real_escape_string($conn, $_POST["description"]);
+                    $uploader = mysqli_real_escape_string($conn, $_POST["uploader"]);
+                    $email = mysqli_real_escape_string($conn, $_POST["email"]);
+                    $year = mysqli_real_escape_string($conn, $_POST["year"]);
+                    $department = mysqli_real_escape_string($conn, $_POST["department"]);
+                    $curriculum = mysqli_real_escape_string($conn, $_POST["curriculum"]);
+                    $status = mysqli_real_escape_string($conn, $_POST["status"]);
+                    $file_path = mysqli_real_escape_string($conn, $_POST["file_path"]); // Add this line
+
+                    // Assuming you have a unique identifier for the record, e.g., file_id
+                    $id = isset($_GET['id']) ? $_GET['id'] : null;
+
+                    // Update the record in the database
+                    $updateQuery = "UPDATE files SET 
                             title = '$title',
                             description = '$description',
                             uploader = '$uploader',
@@ -163,179 +174,181 @@ html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif}
                             file_path = '$file_path'
                             WHERE id = $id";
 
-            if ($conn->query($updateQuery) === TRUE) {
-                $message = "Manuscript updated successfully";
-            } else {
-                $message = "Error updating record: " . $conn->error;
-            }
-        }
+                    if ($conn->query($updateQuery) === TRUE) {
+                        $message = "Manuscript updated successfully";
+                    } else {
+                        $message = "Error updating record: " . $conn->error;
+                    }
+                }
 
-        // Fetch all records from the database for display
-        $selectQuery = "SELECT * FROM files";
-        $result = $conn->query($selectQuery);
-        $records = [];
+                // Fetch all records from the database for display
+                $selectQuery = "SELECT * FROM files";
+                $result = $conn->query($selectQuery);
+                $records = [];
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $records[] = $row;
-            }
-        }
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        $records[] = $row;
+                    }
+                }
 
-        // Close the database connection
-        $conn->close();
-    ?>
+                // Close the database connection
+                $conn->close();
+                ?>
 
-<script>
-    // Display the message using JavaScript alert
-    <?php if(isset($message)) { ?>
-        alert("<?php echo $message; ?>");
-        window.location.href = "dashboard.php";
-    <?php } ?>
-</script>
+                <script>
+                    // Display the message using JavaScript alert
+                    <?php if (isset($message)) { ?>
+                        alert("<?php echo $message; ?>");
+                        window.location.href = "dashboard.php";
+                    <?php } ?>
+                </script>
 
-    <div class="w3-container w3-card w3-white w3-margin-bottom">
-        <h2><i class="fa fa-dashboard fa-fw"></i> Update File</h2>
-        <div class="w3-container">
-            <h5 class="w3-opacity"><b>Here are more details about the paper and you can also edit some information</b></h5>
-            <div style="text-align: center; overflow-x: auto;">
-                <form method="post" action="">
-                    <label for="title"><i class="fa fa-file-text-o"></i> Title:</label>
-                    <input type="text" id="title" name="title" value="<?php echo $title; ?>" required>
+                <div class="w3-container w3-card w3-white w3-margin-bottom">
+                    <h2><i class="fa fa-dashboard fa-fw"></i> Update File</h2>
+                    <div class="w3-container">
+                        <h5 class="w3-opacity"><b>Here are more details about the paper and you can also edit some information</b></h5>
+                        <div style="text-align: center; overflow-x: auto;">
+                            <form method="post" action="">
+                                <label for="title"><i class="fa fa-file-text-o"></i> Title:</label>
+                                <input type="text" id="title" name="title" value="<?php echo $title; ?>" required>
 
-                    <label for="description"><i class="fa fa-pencil"></i> Description:</label>
-                    <textarea id="description" name="description" rows="30" cols="100" required><?php echo $description; ?></textarea>
+                                <label for="description"><i class="fa fa-pencil"></i> Description:</label>
+                                <textarea id="description" name="description" rows="30" cols="100" required><?php echo $description; ?></textarea>
 
-                    <label for="uploader"><i class="fa fa-user"></i> Uploader:</label>
-                    <input type="text" id="uploader" name="uploader" value="<?php echo $uploader; ?>" readonly required>
+                                <label for="uploader"><i class="fa fa-user"></i> Uploader:</label>
+                                <input type="text" id="uploader" name="uploader" value="<?php echo $uploader; ?>" readonly required>
 
-                    <label for="email"><i class="fa fa-envelope"></i> Email:</label>
-                    <input type="text" id="email" name="email" value="<?php echo $email; ?>" readonly required>
+                                <label for="email"><i class="fa fa-envelope"></i> Email:</label>
+                                <input type="text" id="email" name="email" value="<?php echo $email; ?>" readonly required>
 
-                    <label for="year"><i class="fa fa-calendar"></i> Year:</label>
-                    <input type="text" id="year" name="year" value="<?php echo $year; ?>" readonly required>
+                                <label for="year"><i class="fa fa-calendar"></i> Year:</label>
+                                <input type="text" id="year" name="year" value="<?php echo $year; ?>" readonly required>
 
-                    <label for="department"><i class="fa fa-building"></i> Department:</label>
+                                <label for="department"><i class="fa fa-building"></i> Department:</label>
 
-                    <!-- Hidden input field to store the selected department -->
-                    <input type="hidden" id="selectedDepartment" name="department" value="<?php echo $department; ?>">
+                                <!-- Hidden input field to store the selected department -->
+                                <input type="hidden" id="selectedDepartment" name="department" value="<?php echo $department; ?>">
 
-                    <!-- Dropdown menu with options from the department table -->
-                    <select id="departmentDropdown" name="department" onchange="updateHiddenInput()" required>
-                        <?php
-                        require 'connection.php';
+                                <!-- Dropdown menu with options from the department table -->
+                                <select id="departmentDropdown" name="department" onchange="updateHiddenInput()" required>
+                                    <?php
+                                    require 'config/connection.php';
 
-                        // Fetch department options from the database with an Active status
-                        $departmentQuery = "SELECT DISTINCT department FROM curriculum WHERE status = 'Active'";
-                        $departmentResult = $conn->query($departmentQuery);
+                                    // Fetch department options from the database with an Active status
+                                    $departmentQuery = "SELECT DISTINCT department FROM curriculum WHERE status = 'Active'";
+                                    $departmentResult = $conn->query($departmentQuery);
 
-                        // Check if there are any rows in the result
-                        if ($departmentResult->num_rows > 0) {
-                            // Fetch and display each department as an option
-                            while ($departmentRow = $departmentResult->fetch_assoc()) {
-                                $departmentName = $departmentRow['department'];
-                                $isSelected = ($department == $departmentName) ? 'selected' : '';
-                                echo "<option value=\"$departmentName\" $isSelected>$departmentName</option>";
-                            }
-                        } else {
-                            // If no active departments are found, you can display a default option or handle it as needed
-                            echo "<option value=\"\">No active departments found</option>";
-                        }
-                        ?>
-                    </select>
+                                    // Check if there are any rows in the result
+                                    if ($departmentResult->num_rows > 0) {
+                                        // Fetch and display each department as an option
+                                        while ($departmentRow = $departmentResult->fetch_assoc()) {
+                                            $departmentName = $departmentRow['department'];
+                                            $isSelected = ($department == $departmentName) ? 'selected' : '';
+                                            echo "<option value=\"$departmentName\" $isSelected>$departmentName</option>";
+                                        }
+                                    } else {
+                                        // If no active departments are found, you can display a default option or handle it as needed
+                                        echo "<option value=\"\">No active departments found</option>";
+                                    }
+                                    ?>
+                                </select>
 
-                    <script>
-                        // JavaScript function to update the hidden input field when the dropdown value changes
-                        function updateHiddenInput() {
-                            var selectedValue = document.getElementById("departmentDropdown").value;
-                            document.getElementById("selectedDepartment").value = selectedValue;
-                        }
-                    </script>
+                                <script>
+                                    // JavaScript function to update the hidden input field when the dropdown value changes
+                                    function updateHiddenInput() {
+                                        var selectedValue = document.getElementById("departmentDropdown").value;
+                                        document.getElementById("selectedDepartment").value = selectedValue;
+                                    }
+                                </script>
 
-                    <label for="curriculum"><i class="fa fa-book"></i> Curriculum:</label>
+                                <label for="curriculum"><i class="fa fa-book"></i> Curriculum:</label>
 
-                    <!-- Hidden input field to store the selected curriculum -->
-                    <input type="hidden" id="selectedcurriculum" name="curriculum" value="<?php echo $curriculum; ?>">
+                                <!-- Hidden input field to store the selected curriculum -->
+                                <input type="hidden" id="selectedcurriculum" name="curriculum" value="<?php echo $curriculum; ?>">
 
-                    <!-- Dropdown menu with options from the curriculum table -->
-                    <select id="curriculumDropdown" name="curriculum" onchange="updateHiddenInput()" required>
-                        <?php
-                        require 'connection.php';
+                                <!-- Dropdown menu with options from the curriculum table -->
+                                <select id="curriculumDropdown" name="curriculum" onchange="updateHiddenInput()" required>
+                                    <?php
+                                    require 'config/connection.php';
 
-                        // Fetch unique curriculum options from the database with an Active status
-                        $curriculumQuery = "SELECT DISTINCT curriculum FROM curriculum WHERE status2 = 'Active'";
-                        $curriculumResult = $conn->query($curriculumQuery);
+                                    // Fetch unique curriculum options from the database with an Active status
+                                    $curriculumQuery = "SELECT DISTINCT curriculum FROM curriculum WHERE status2 = 'Active'";
+                                    $curriculumResult = $conn->query($curriculumQuery);
 
-                        // Check if there are any rows in the result
-                        if ($curriculumResult->num_rows > 0) {
-                            // Fetch and display each unique curriculum as an option
-                            while ($curriculumRow = $curriculumResult->fetch_assoc()) {
-                                $curriculumName = $curriculumRow['curriculum'];
+                                    // Check if there are any rows in the result
+                                    if ($curriculumResult->num_rows > 0) {
+                                        // Fetch and display each unique curriculum as an option
+                                        while ($curriculumRow = $curriculumResult->fetch_assoc()) {
+                                            $curriculumName = $curriculumRow['curriculum'];
 
-                                // Check if curriculum name is not empty before displaying
-                                if (!empty($curriculumName)) {
-                                    $isSelected = ($curriculum == $curriculumName) ? 'selected' : '';
-                                    echo "<option value=\"$curriculumName\" $isSelected>$curriculumName</option>";
-                                }
-                            }
-                        } else {
-                            // If no active curricula are found, you can display a default option or handle it as needed
-                            echo "<option value=\"\">No active curriculum found</option>";
-                        }
-                        ?>
-                    </select>
+                                            // Check if curriculum name is not empty before displaying
+                                            if (!empty($curriculumName)) {
+                                                $isSelected = ($curriculum == $curriculumName) ? 'selected' : '';
+                                                echo "<option value=\"$curriculumName\" $isSelected>$curriculumName</option>";
+                                            }
+                                        }
+                                    } else {
+                                        // If no active curricula are found, you can display a default option or handle it as needed
+                                        echo "<option value=\"\">No active curriculum found</option>";
+                                    }
+                                    ?>
+                                </select>
 
-                    <script>
-                        // JavaScript function to update the hidden input field when the dropdown value changes
-                        function updateHiddenInput() {
-                            var selectedValue = document.getElementById("curriculumDropdown").value;
-                            document.getElementById("selectedcurriculum").value = selectedValue;
-                        }
-                    </script>
+                                <script>
+                                    // JavaScript function to update the hidden input field when the dropdown value changes
+                                    function updateHiddenInput() {
+                                        var selectedValue = document.getElementById("curriculumDropdown").value;
+                                        document.getElementById("selectedcurriculum").value = selectedValue;
+                                    }
+                                </script>
 
-                    <input type="hidden" name="status" value="<?php echo $status; ?>">
-                    <input type="hidden" name="file_path" value="<?php echo $file_path; ?>">
-                    <style type="text/css">
-                        label {
-            font-size: 16px;
-            margin-bottom: 8px;
-            display: block;
-        }
+                                <input type="hidden" name="status" value="<?php echo $status; ?>">
+                                <input type="hidden" name="file_path" value="<?php echo $file_path; ?>">
+                                <style type="text/css">
+                                    label {
+                                        font-size: 16px;
+                                        margin-bottom: 8px;
+                                        display: block;
+                                    }
 
-        input[type=text], select {
-            width: 100%;
-            padding: 12px 20px;
-            margin: 8px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
+                                    input[type=text],
+                                    select {
+                                        width: 100%;
+                                        padding: 12px 20px;
+                                        margin: 8px 0;
+                                        display: inline-block;
+                                        border: 1px solid #ccc;
+                                        box-sizing: border-box;
+                                    }
 
-        input[type=submit] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 14px 20px;
-            margin: 8px 0;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-        }
+                                    input[type=submit] {
+                                        background-color: #4CAF50;
+                                        color: white;
+                                        padding: 14px 20px;
+                                        margin: 8px 0;
+                                        border: none;
+                                        cursor: pointer;
+                                        width: 100%;
+                                    }
 
-        input[type=submit]:hover {
-            background-color: #45a049;
-        }
-                    </style>
-                    <a href="view_file.php?id=<?php echo $id; ?>" class="w3-button w3-blue" target="_blank"><i class="fa fa-eye"></i> View</a>
-                    <button type="submit"><i class="fa fa-check"></i> Update</button>
+                                    input[type=submit]:hover {
+                                        background-color: #45a049;
+                                    }
+                                </style>
+                                <a href="view_file.php?id=<?php echo $id; ?>" class="w3-button w3-blue" target="_blank"><i class="fa fa-eye"></i> View</a>
+                                <button type="submit"><i class="fa fa-check"></i> Update</button>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+
+                <!-- End Grid -->
             </div>
-            <hr>
+
+            <!-- End Page Container -->
         </div>
-    </div>
-    
-  <!-- End Grid -->
-  </div>
-  
-  <!-- End Page Container -->
-</div>
 
 </body>
+
 </html>

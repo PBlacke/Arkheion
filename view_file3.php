@@ -2,7 +2,7 @@
 // view_file.php
 
 // Include the connection file
-require 'connection.php';
+require 'config/connection.php';
 
 // Assuming you have a unique identifier for the record, e.g., file_id
 $id = isset($_GET['id']) ? $_GET['id'] : null;
@@ -35,4 +35,3 @@ if (!empty($id)) {
 
 // Close the database connection
 $conn->close();
-?>

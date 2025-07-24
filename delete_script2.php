@@ -1,6 +1,6 @@
 <?php
-// Assume you have established a database connection in your connection.php file
-require 'connection.php';
+// Assume you have established a database connection in your config/connection.php file
+require 'config/connection.php';
 
 // Get the file ID from the URL
 $fileId = isset($_GET['id']) ? $_GET['id'] : null;
@@ -45,4 +45,3 @@ if ($fileId !== null) {
 
 // Close the database connection
 $conn->close();
-?>

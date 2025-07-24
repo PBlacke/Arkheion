@@ -314,5 +314,5 @@ class DatabaseHelper
     }
 }
 
-// Initialize the helper (place this after your connection.php)
+// Initialize the helper (place this after your config/connection.php)
 $db = new DatabaseHelper($conn);

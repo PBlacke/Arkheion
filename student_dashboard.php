@@ -10,7 +10,7 @@ if (!isset($_SESSION['student_id'])) {
 }
 
 // Include the connection file
-require 'connection.php';
+require 'config/connection.php';
 
 // Get student information
 $student_id = $_SESSION['student_id'];
@@ -41,6 +41,7 @@ while ($row = $papers_result->fetch_assoc()) {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Arkheion - Student Dashboard</title>
     <meta charset="UTF-8">
@@ -50,14 +51,26 @@ while ($row = $papers_result->fetch_assoc()) {
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-        html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif}
+        html,
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Roboto", sans-serif
+        }
+
         .paper-card {
             margin-bottom: 20px;
             transition: transform 0.3s;
         }
+
         .paper-card:hover {
             transform: translateY(-5px);
         }
+
         .search-box {
             width: 100%;
             padding: 12px 20px;
@@ -68,104 +81,106 @@ while ($row = $papers_result->fetch_assoc()) {
         }
     </style>
 </head>
+
 <body class="w3-light-grey">
 
-<!-- Page Container -->
-<div class="w3-content w3-margin-top" style="max-width:1400px;">
+    <!-- Page Container -->
+    <div class="w3-content w3-margin-top" style="max-width:1400px;">
 
-  <!-- The Grid -->
-  <div class="w3-row-padding">
-  
-    <!-- Left Column -->
-    <div class="w3-third">
-    
-      <div class="w3-white w3-text-grey w3-card-4">
-        <div class="w3-container">
-          <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-user fa-fw w3-margin-right w3-xxlarge w3-text-#0c1776"></i>Student Profile</h2>
-          <p><i class="fa fa-user fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo htmlspecialchars($student['first_name']) . ' ' . htmlspecialchars($student['last_name']) . ($student['suffix'] ? ' ' . htmlspecialchars($student['suffix']) : ''); ?></p>
-          <p><i class="fa fa-id-badge fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo htmlspecialchars($student['username']); ?></p>
-          <p><i class="fa fa-envelope fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo htmlspecialchars($student['email']); ?></p>
-          <p><i class="fa fa-phone fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo htmlspecialchars($student['phone_number']); ?></p>
-          <p><i class="fa fa-calendar fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo date('F j, Y', strtotime($student['date_of_birth'])); ?></p>
-          <p><i class="fa fa-building fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo htmlspecialchars($student['department']); ?></p>
-          <p><i class="fa fa-book fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo htmlspecialchars($student['curriculum']); ?></p>
-          <hr>
+        <!-- The Grid -->
+        <div class="w3-row-padding">
 
-          <p class="w3-large"><b><i class="fa fa-asterisk fa-fw w3-margin-right w3-text-#0c1776"></i>Options</b></p>
-          
-          <a href="student_dashboard.php" class="w3-bar-item w3-button w3-padding"><i class="fa fa-home fa-fw"></i> Dashboard</a>
-          <a href="student_papers.php" class="w3-bar-item w3-button w3-padding"><i class="fa fa-book fa-fw"></i> My Papers</a>
-          <a href="student_profile.php" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-fw"></i> Profile</a>
-          <a href="student_settings.php" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i> Settings</a>
-          <a href="logout.php" class="w3-bar-item w3-button w3-padding"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-          <br>
-        </div>
-      </div><br>
+            <!-- Left Column -->
+            <div class="w3-third">
 
-    <!-- End Left Column -->
-    </div>
+                <div class="w3-white w3-text-grey w3-card-4">
+                    <div class="w3-container">
+                        <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-user fa-fw w3-margin-right w3-xxlarge w3-text-#0c1776"></i>Student Profile</h2>
+                        <p><i class="fa fa-user fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo htmlspecialchars($student['first_name']) . ' ' . htmlspecialchars($student['last_name']) . ($student['suffix'] ? ' ' . htmlspecialchars($student['suffix']) : ''); ?></p>
+                        <p><i class="fa fa-id-badge fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo htmlspecialchars($student['username']); ?></p>
+                        <p><i class="fa fa-envelope fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo htmlspecialchars($student['email']); ?></p>
+                        <p><i class="fa fa-phone fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo htmlspecialchars($student['phone_number']); ?></p>
+                        <p><i class="fa fa-calendar fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo date('F j, Y', strtotime($student['date_of_birth'])); ?></p>
+                        <p><i class="fa fa-building fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo htmlspecialchars($student['department']); ?></p>
+                        <p><i class="fa fa-book fa-fw w3-margin-right w3-large w3-text-#0c1776"></i><?php echo htmlspecialchars($student['curriculum']); ?></p>
+                        <hr>
 
-    <!-- Right Column -->
-    <div class="w3-twothird">
-    
-      <div class="w3-container w3-card w3-white w3-margin-bottom">
-        <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-book fa-fw w3-margin-right w3-xxlarge w3-text-#0c1776"></i>Available Papers</h2>
-        
-        <div class="w3-container">
-            <input type="text" id="searchInput" class="search-box" placeholder="Search papers...">
-            
-            <div id="papersList">
-                <?php foreach ($papers as $paper): ?>
-                    <div class="w3-container w3-card w3-white w3-margin-bottom paper-card">
-                        <h3><?php echo htmlspecialchars($paper['title']); ?></h3>
-                        <p class="w3-opacity"><b>Author:</b> <?php echo htmlspecialchars($paper['uploader']); ?></p>
-                        <p><b>Description:</b> <?php echo htmlspecialchars($paper['description']); ?></p>
-                        <p><b>Year:</b> <?php echo htmlspecialchars($paper['year']); ?></p>
-                        <div class="w3-row">
-                            <div class="w3-col m6">
-                                <a href="view_file.php?id=<?php echo $paper['id']; ?>" class="w3-button w3-red" target="_blank">
-                                    <i class="fa fa-eye"></i> View
-                                </a>
-                            </div>
-                            <div class="w3-col m6">
-                                <a href="download.php?id=<?php echo $paper['id']; ?>" class="w3-button w3-green">
-                                    <i class="fa fa-download"></i> Download
-                                </a>
-                            </div>
+                        <p class="w3-large"><b><i class="fa fa-asterisk fa-fw w3-margin-right w3-text-#0c1776"></i>Options</b></p>
+
+                        <a href="student_dashboard.php" class="w3-bar-item w3-button w3-padding"><i class="fa fa-home fa-fw"></i> Dashboard</a>
+                        <a href="student_papers.php" class="w3-bar-item w3-button w3-padding"><i class="fa fa-book fa-fw"></i> My Papers</a>
+                        <a href="student_profile.php" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-fw"></i> Profile</a>
+                        <a href="student_settings.php" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i> Settings</a>
+                        <a href="logout.php" class="w3-bar-item w3-button w3-padding"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <br>
+                    </div>
+                </div><br>
+
+                <!-- End Left Column -->
+            </div>
+
+            <!-- Right Column -->
+            <div class="w3-twothird">
+
+                <div class="w3-container w3-card w3-white w3-margin-bottom">
+                    <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-book fa-fw w3-margin-right w3-xxlarge w3-text-#0c1776"></i>Available Papers</h2>
+
+                    <div class="w3-container">
+                        <input type="text" id="searchInput" class="search-box" placeholder="Search papers...">
+
+                        <div id="papersList">
+                            <?php foreach ($papers as $paper): ?>
+                                <div class="w3-container w3-card w3-white w3-margin-bottom paper-card">
+                                    <h3><?php echo htmlspecialchars($paper['title']); ?></h3>
+                                    <p class="w3-opacity"><b>Author:</b> <?php echo htmlspecialchars($paper['uploader']); ?></p>
+                                    <p><b>Description:</b> <?php echo htmlspecialchars($paper['description']); ?></p>
+                                    <p><b>Year:</b> <?php echo htmlspecialchars($paper['year']); ?></p>
+                                    <div class="w3-row">
+                                        <div class="w3-col m6">
+                                            <a href="view_file.php?id=<?php echo $paper['id']; ?>" class="w3-button w3-red" target="_blank">
+                                                <i class="fa fa-eye"></i> View
+                                            </a>
+                                        </div>
+                                        <div class="w3-col m6">
+                                            <a href="download.php?id=<?php echo $paper['id']; ?>" class="w3-button w3-green">
+                                                <i class="fa fa-download"></i> Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                </div>
+
+                <!-- End Right Column -->
             </div>
+
+            <!-- End Grid -->
         </div>
-      </div>
 
-    <!-- End Right Column -->
+        <!-- End Page Container -->
     </div>
-    
-  <!-- End Grid -->
-  </div>
-  
-  <!-- End Page Container -->
-</div>
 
-<script>
-// Search functionality
-document.getElementById('searchInput').addEventListener('keyup', function() {
-    var input = this.value.toLowerCase();
-    var papers = document.getElementById('papersList').getElementsByClassName('paper-card');
-    
-    for (var i = 0; i < papers.length; i++) {
-        var title = papers[i].getElementsByTagName('h3')[0].textContent.toLowerCase();
-        var description = papers[i].getElementsByTagName('p')[1].textContent.toLowerCase();
-        
-        if (title.includes(input) || description.includes(input)) {
-            papers[i].style.display = "";
-        } else {
-            papers[i].style.display = "none";
-        }
-    }
-});
-</script>
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            var input = this.value.toLowerCase();
+            var papers = document.getElementById('papersList').getElementsByClassName('paper-card');
+
+            for (var i = 0; i < papers.length; i++) {
+                var title = papers[i].getElementsByTagName('h3')[0].textContent.toLowerCase();
+                var description = papers[i].getElementsByTagName('p')[1].textContent.toLowerCase();
+
+                if (title.includes(input) || description.includes(input)) {
+                    papers[i].style.display = "";
+                } else {
+                    papers[i].style.display = "none";
+                }
+            }
+        });
+    </script>
 
 </body>
-</html> 
+
+</html>

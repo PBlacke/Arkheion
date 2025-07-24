@@ -1,6 +1,6 @@
 <?php
 // Include the connection file
-require 'connection.php';
+require 'config/connection.php';
 
 // Check if the user is logged in
 if (isset($_SESSION['employee_id'])) {
@@ -16,8 +16,8 @@ if (isset($_SESSION['employee_id'])) {
         $username = $row['username'];
         $email = $row['email'];
     } else {
-        $username = "Default Username"; 
-        $email = "Default Email"; 
+        $username = "Default Username";
+        $email = "Default Email";
     }
 
     $stmt->close();
@@ -37,6 +37,7 @@ $pending_result = $pending_stmt->get_result();
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -149,8 +150,13 @@ $pending_result = $pending_stmt->get_result();
             }
 
             @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
             }
         </style>
 
@@ -159,13 +165,13 @@ $pending_result = $pending_stmt->get_result();
                 // Create loading overlay
                 var overlay = document.createElement('div');
                 overlay.className = 'loading-overlay';
-                
+
                 var spinner = document.createElement('div');
                 spinner.className = 'loading-spinner';
-                
+
                 overlay.appendChild(spinner);
                 document.body.appendChild(overlay);
-                
+
                 // Redirect after a short delay
                 setTimeout(function() {
                     window.location.href = url;
@@ -318,4 +324,4 @@ $pending_result = $pending_stmt->get_result();
     </div>
 </div>
 
-<?php $pending_stmt->close(); ?> 
+<?php $pending_stmt->close(); ?>

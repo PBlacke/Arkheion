@@ -1,6 +1,6 @@
 <?php
 // Include the connection file
-require 'connection.php';
+require 'config/connection.php';
 
 // Assuming you have a unique identifier for the record, e.g., file_id
 $id = isset($_GET['id']) ? $_GET['id'] : null;
@@ -26,7 +26,7 @@ if (!empty($id)) {
             header('Cache-Control: public, must-revalidate, max-age=0');
             header('Pragma: public');
             header('Content-Length: ' . filesize($filePath));
-            
+
             // Output the file
             readfile($filePath);
             exit;
@@ -42,4 +42,3 @@ if (!empty($id)) {
 }
 
 $conn->close();
-?>

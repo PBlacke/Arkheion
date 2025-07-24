@@ -1,5 +1,5 @@
 <?php
-require 'connection.php';
+require 'config/connection.php';
 
 // Enable error reporting
 error_reporting(E_ALL);
@@ -7,7 +7,7 @@ ini_set('display_errors', 1);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $response = array();
-    
+
     try {
         // Retrieve form data and sanitize
         $title = mysqli_real_escape_string($conn, $_POST["title"]);
@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Handle file uploads for manuscript and image
         $uploadDirectory = "uploads/"; // Set your desired upload directory
-        
+
         // Check if directory exists and is writable
         if (!is_dir($uploadDirectory)) {
             throw new Exception("Upload directory does not exist");
@@ -50,13 +50,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Check if the files are of the correct types
         if ($manuscriptFileType == "pdf" && in_array($imageFileType, ["jpg", "jpeg", "png"], true)) {
             // Move uploaded files to the server
-            if (move_uploaded_file($_FILES["file"]["tmp_name"], $manuscriptFile) && 
-                move_uploaded_file($_FILES["image"]["tmp_name"], $imageFile)) {
-                
+            if (
+                move_uploaded_file($_FILES["file"]["tmp_name"], $manuscriptFile) &&
+                move_uploaded_file($_FILES["image"]["tmp_name"], $imageFile)
+            ) {
+
                 // Insert the new record into the database
                 $insertQuery = "INSERT INTO files (title, description, uploader, email, year, department, curriculum, status, file_path, filename, image)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                
+
                 $stmt = $conn->prepare($insertQuery);
                 if (!$stmt) {
                     throw new Exception("Prepare failed: " . $conn->error);
@@ -64,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 $imageFullPath = $uploadDirectory . $imageFileName;
                 $stmt->bind_param("sssssssssss", $title, $description, $uploader, $email, $year, $department, $curriculum, $status, $ManuFile, $ManuFile, $imageFullPath);
-                
+
                 if ($stmt->execute()) {
                     $response['success'] = true;
                     $response['message'] = "Manuscript added successfully!";
@@ -96,4 +98,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: faculty.php");
     exit();
 }
-?>

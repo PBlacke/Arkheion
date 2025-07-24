@@ -59,8 +59,8 @@
 
             </div>
 
-            <!-- Assuming you have established a database connection in your connection.php file -->
-            <?php require 'connection.php'; ?>
+            <!-- Assuming you have established a database connection in your config/connection.php file -->
+            <?php require 'config/connection.php'; ?>
 
             <div class="swiper books-slider">
                 <div class="swiper-wrapper">
@@ -91,8 +91,8 @@
 
     <!-- featured section start -->
 
-    <!-- Assuming you have established a database connection in your connection.php file -->
-    <?php require 'connection.php'; ?>
+    <!-- Assuming you have established a database connection in your config/connection.php file -->
+    <?php require 'config/connection.php'; ?>
 
     <section class="featured" id="featured">
         <h1 class="heading">

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../config/connection.php';
+require '../config/config/connection.php';
 require '../config/auth.php';
 
 // Redirect if already logged in

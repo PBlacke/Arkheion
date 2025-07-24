@@ -1,5 +1,5 @@
 <?php
-require 'connection.php';
+require 'config/connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve form data and sanitize
@@ -55,4 +55,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: dashboard.php");
     exit();
 }
-?>

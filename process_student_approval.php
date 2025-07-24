@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'connection.php';
+require 'config/connection.php';
 
 // Check if user is logged in and is faculty
 if (!isset($_SESSION['employee_id'])) {
@@ -29,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action === 'approve') {
             // Insert into students table
             $insert = $conn->prepare("INSERT INTO students (username, password, email, first_name, middle_name, last_name, suffix, date_of_birth, address, educational_attainment, department) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $insert->bind_param("sssssssssss", 
+            $insert->bind_param(
+                "sssssssssss",
                 $student['username'],
                 $student['password'],
                 $student['email'],
@@ -55,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $new_student_id = $insert->insert_id;
             $notify->bind_param("is", $new_student_id, $message);
             $notify->execute();
-
         } else if ($action === 'reject') {
             // Update status in pending_students
             $update = $conn->prepare("UPDATE pending_students SET status = 'Rejected' WHERE id = ?");
@@ -74,7 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Commit transaction
         $conn->commit();
         echo json_encode(['success' => true, 'message' => 'Action completed successfully']);
-
     } catch (Exception $e) {
         // Rollback transaction on error
         $conn->rollback();
