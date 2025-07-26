@@ -24,7 +24,15 @@ CREATE TABLE
         `department` VARCHAR(255) NOT NULL,
         `employee_id` VARCHAR(255) NOT NULL UNIQUE,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
+    );
+
+CREATE TABLE
+    IF NOT EXISTS `department` (
+        `id` int (11) NOT NULL AUTO_INCREMENT,
+        `department_name` varchar(255) NOT NULL,
+        `status` varchar(255) NOT NULL,
+        PRIMARY KEY (`id`)
+    );
 
 CREATE TABLE
     IF NOT EXISTS `students` (
@@ -83,14 +91,6 @@ CREATE TABLE
         `status` varchar(255) DEFAULT 'default_value',
         `status2` varchar(255) DEFAULT NULL,
         PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB AUTO_INCREMENT = 51 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
-
-CREATE TABLE
-    IF NOT EXISTS `department` (
-        `id` int (11) NOT NULL AUTO_INCREMENT,
-        `department_name` varchar(255) NOT NULL,
-        `status` varchar(255) NOT NULL,
-        PRIMARY KEY (`id`)
     );
 
 CREATE TABLE
@@ -110,7 +110,7 @@ CREATE TABLE
         `curriculum` varchar(100) DEFAULT NULL,
         `image` varchar(255) DEFAULT NULL,
         PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB AUTO_INCREMENT = 4 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
+    );
 
 CREATE TABLE
     IF NOT EXISTS `notifications` (
@@ -128,3 +128,24 @@ CREATE TABLE
         CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE,
         CONSTRAINT `notifications_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
     );
+
+-- Insert default admin account
+-- Password is 'admin123' (hashed using PHP's password_hash function)
+INSERT IGNORE INTO `users` (`username`, `email`, `password`, `role`, `status`)
+VALUES
+    (
+        'admin',
+        'admin@arkheion.local',
+        '$2y$10$8ez9D3Rxo8534qBbQRvG7.lnGNlWmT7CaAJNQaenEdvm3W0G4uA5i',
+        'admin',
+        'active'
+    );
+
+-- Optional: Insert some default departments
+INSERT IGNORE INTO `department` (`department_name`, `status`)
+VALUES
+    ('Computer Science', 'active'),
+    ('Information Technology', 'active'),
+    ('Engineering', 'active'),
+    ('Business Administration', 'active'),
+    ('Education', 'active');

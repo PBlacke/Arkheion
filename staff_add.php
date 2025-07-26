@@ -1,16 +1,17 @@
 <?php
 // Include the connection file
-require 'config/connection.php';
+require_once 'config/connection.php';
+require_once 'includes/database.php';
 
 // Start the session
 session_start();
 
 // Check if the user is logged in
-if (!isset($_SESSION['admin_id'])) {
-    // Redirect to the login page if the user is not logged in
-    header("Location: index.php");
-    exit();
-}
+// if (!isset($_SESSION['admin_id'])) {
+//     // Redirect to the login page if the user is not logged in
+//     header("Location: index.php");
+//     exit();
+// }
 
 // Initialize message variables
 $success_message = '';
@@ -85,18 +86,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Get departments for dropdown
-$dept_query = "SELECT DISTINCT department FROM department WHERE status = 'Active'";
-$dept_result = $conn->query($dept_query);
-$departments = [];
-if ($dept_result && $dept_result->num_rows > 0) {
-    while ($row = $dept_result->fetch_assoc()) {
-        $departments[] = $row;
-    }
-}
+$departments = $db->getDepartments();
 
 // Get curricula for dropdown
-$curr_query = "SELECT DISTINCT curriculum FROM curriculum WHERE status2 = 'Active'";
+$curr_query = "SELECT DISTINCT curriculum FROM curriculum WHERE status2 = 'active'";
 $curr_result = $conn->query($curr_query);
 $curricula = [];
 if ($curr_result && $curr_result->num_rows > 0) {
@@ -217,66 +210,7 @@ if ($curr_result && $curr_result->num_rows > 0) {
                     </h2>
 
                     <div class="form-container">
-                        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-                            <div class="form-group">
-                                <label>Name</label>
-                                <div class="name-group">
-                                    <div>
-                                        <input type="text" name="first_name" placeholder="First Name" required>
-                                    </div>
-                                    <div>
-                                        <input type="text" name="middle_name" placeholder="Middle Name">
-                                    </div>
-                                    <div>
-                                        <input type="text" name="last_name" placeholder="Last Name" required>
-                                    </div>
-                                    <div class="suffix-field">
-                                        <input type="text" name="suffix" placeholder="Suffix">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Birthdate</label>
-                                <input type="date" name="birthdate" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Address</label>
-                                <input type="text" name="address" placeholder="Complete Address" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Username</label>
-                                <input type="text" name="username" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Password</label>
-                                <input type="password" name="password" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" name="email" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Department</label>
-                                <select name="department" required>
-                                    <option value="">Select Department</option>
-                                    <?php foreach ($departments as $dept): ?>
-                                        <option value="<?php echo htmlspecialchars($dept['department']); ?>">
-                                            <?php echo htmlspecialchars($dept['department']); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <button type="submit" class="w3-button w3-red">Add Staff</button>
-                            </div>
-                        </form>
+                        <?php include 'forms/add_staff_form.php'; ?>
                     </div>
                 </div>
             </div>

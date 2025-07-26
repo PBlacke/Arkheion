@@ -6,11 +6,11 @@ require 'config/connection.php';
 session_start();
 
 // Check if the user is logged in
-if (!isset($_SESSION['admin_id'])) {
-    // Redirect to the login page if the user is not logged in
-    header("Location: index.php");
-    exit();
-}
+// if (!isset($_SESSION['admin_id'])) {
+//     // Redirect to the login page if the user is not logged in
+//     header("Location: index.php");
+//     exit();
+// }
 
 // Define the number of records per page
 $recordsPerPage = 10;
@@ -56,6 +56,7 @@ $totalPages = ceil($totalRecords / $recordsPerPage);
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/output.css">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnc.heyzine.com/release/jquery.pdfflipbook.3.js"></script>
     <style>

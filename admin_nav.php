@@ -1,26 +1,25 @@
 <?php
 // Include the connection file
 require 'config/connection.php';
+require_once 'config/auth.php';
 
 // Get admin info
-$sql = "SELECT username, email FROM admin WHERE id = 1";
-$result = $conn->query($sql);
+// $sql = "SELECT username, email FROM admin WHERE id = 1";
+// $result = $conn->query($sql);
 
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $username = $row['username'];
-    $email = $row['email'];
-} else {
-    $username = "Default Username";
-    $email = "Default Email";
-}
-
-$conn->close();
+// if ($result->num_rows > 0) {
+//     $row = $result->fetch_assoc();
+//     $username = $row['username'];
+//     $email = $row['email'];
+// } else {
+//     $username = "Default Username";
+//     $email = "Default Email";
+// }
 ?>
 
 <!-- Left Column -->
 <div class="w3-third">
-    <div class="w3-white w3-text-grey w3-card-4">
+    <div class="bg-orange-300 w3-text-grey w3-card-4">
         <div class="w3-display-container">
             <div class="w3-display-bottomleft w3-container w3-text-black">
             </div>
@@ -148,7 +147,6 @@ $conn->close();
                 <p class="list">Logout</p>
             </a>
             <div class="w3-light-grey w3-round-xlarge w3-small"></div>
-
             <br>
         </div>
     </div><br>

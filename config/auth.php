@@ -1,36 +1,31 @@
 <?php
-// auth.php - Central authentication functions
+// auth.php - Hybrid version that accepts both mysqli connection and DatabaseHelper
 
-function authenticateUser($conn, $username, $password)
+function authenticateUser($connection, $username, $password)
 {
+    // Check if we received a DatabaseHelper instance or raw mysqli connection
+    if ($connection instanceof DatabaseHelper) {
+        $db = $connection;
+    } else {
+        // Create DatabaseHelper from mysqli connection
+        $db = new DatabaseHelper($connection);
+    }
+
     // First check if user exists in pending_students
-    $stmt = $conn->prepare("SELECT * FROM pending_students WHERE username = ? LIMIT 1");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $pendingStudent = $db->fetchOne('pending_students', ['username' => $username]);
 
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $stmt->close();
-
-        if ($row['status'] === 'Pending') {
+    if ($pendingStudent) {
+        if ($pendingStudent['status'] === 'Pending') {
             return ['success' => false, 'message' => 'Your registration is still pending approval.'];
-        } else if ($row['status'] === 'Rejected') {
+        } else if ($pendingStudent['status'] === 'Rejected') {
             return ['success' => false, 'message' => 'Your registration has been rejected. Please contact your department for more information.'];
         }
     }
-    $stmt->close();
 
     // Check in main users table
-    $stmt = $conn->prepare("SELECT id, username, password, role, status FROM users WHERE username = ? LIMIT 1");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $user = $db->fetchOne('users', ['username' => $username]);
 
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-        $stmt->close();
-
+    if ($user) {
         // Check if account is active
         if ($user['status'] !== 'active') {
             return ['success' => false, 'message' => 'Your account is not active. Please contact support.'];
@@ -47,65 +42,47 @@ function authenticateUser($conn, $username, $password)
             return ['success' => false, 'message' => 'Invalid username or password.'];
         }
     } else {
-        $stmt->close();
         return ['success' => false, 'message' => 'Invalid username or password.'];
     }
 }
 
-function getUserProfile($conn, $user_id, $role)
+function getUserProfile($connection, $user_id, $role)
 {
+    // Check if we received a DatabaseHelper instance or raw mysqli connection
+    if ($connection instanceof DatabaseHelper) {
+        $db = $connection;
+    } else {
+        // Create DatabaseHelper from mysqli connection
+        $db = new DatabaseHelper($connection);
+    }
+
     switch ($role) {
         case 'student':
-            $stmt = $conn->prepare("
-                SELECT s.*, d.department_name, u.email, u.username 
-                FROM students s 
-                JOIN department d ON s.department_id = d.id 
-                JOIN users u ON s.user_id = u.id 
-                WHERE s.user_id = ?
-            ");
-            break;
+            return $db->getStudentByUserId($user_id);
 
         case 'faculty':
-            $stmt = $conn->prepare("
-                SELECT f.*, u.email, u.username 
-                FROM faculty f 
-                JOIN users u ON f.user_id = u.id 
-                WHERE f.user_id = ?
-            ");
-            break;
+            $faculty = $db->getFaculty(['f.user_id' => $user_id]);
+            return !empty($faculty) ? $faculty[0] : null;
 
         case 'admin':
-            $stmt = $conn->prepare("
-                SELECT u.id, u.username, u.email, u.role, u.created_at 
-                FROM users u 
-                WHERE u.id = ?
-            ");
-            break;
+            return $db->fetchById('users', $user_id);
 
         default:
             return null;
     }
-
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $profile = $result->fetch_assoc();
-    $stmt->close();
-
-    return $profile;
 }
 
 function redirectToDashboard($role)
 {
     switch ($role) {
         case 'admin':
-            header("Location: admin_dashboard.php");
+            header("Location: ./dashbaord.php");
             break;
         case 'faculty':
-            header("Location: faculty_dashboard.php");
+            header("Location: ../fac_dash.php");
             break;
         case 'student':
-            header("Location: student_dashboard.php");
+            header("Location: ./student_dashboard.php");
             break;
         default:
             header("Location: index.php");
@@ -157,4 +134,75 @@ function logout()
     session_destroy();
     header("Location: index.php");
     exit();
+}
+
+// Helper function to validate user exists and is active
+function validateUser($connection, $user_id)
+{
+    if ($connection instanceof DatabaseHelper) {
+        $db = $connection;
+    } else {
+        $db = new DatabaseHelper($connection);
+    }
+
+    $user = $db->fetchById('users', $user_id);
+    return $user && $user['status'] === 'active';
+}
+
+// Helper function to check if username exists (useful for registration)
+function usernameExists($connection, $username)
+{
+    if ($connection instanceof DatabaseHelper) {
+        $db = $connection;
+    } else {
+        $db = new DatabaseHelper($connection);
+    }
+
+    return $db->exists('users', ['username' => $username]) ||
+        $db->exists('pending_students', ['username' => $username]);
+}
+
+// Helper function to check if email exists (useful for registration)
+function emailExists($connection, $email)
+{
+    if ($connection instanceof DatabaseHelper) {
+        $db = $connection;
+    } else {
+        $db = new DatabaseHelper($connection);
+    }
+
+    return $db->exists('users', ['email' => $email]) ||
+        $db->exists('pending_students', ['email' => $email]);
+}
+
+// Helper function to get user by email
+function getUserByEmail($connection, $email)
+{
+    if ($connection instanceof DatabaseHelper) {
+        $db = $connection;
+    } else {
+        $db = new DatabaseHelper($connection);
+    }
+
+    return $db->fetchOne('users', ['email' => $email]);
+}
+
+// Helper function to update user last login timestamp
+function updateLastLogin($connection, $user_id)
+{
+    // For this function, we need the raw mysqli connection
+    if ($connection instanceof DatabaseHelper) {
+        // If we got DatabaseHelper, we need access to the raw connection
+        // This is a limitation - you might want to add a getConnection() method to DatabaseHelper
+        global $conn;
+        $mysqli = $conn;
+    } else {
+        $mysqli = $connection;
+    }
+
+    $stmt = $mysqli->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
+    $stmt->bind_param("i", $user_id);
+    $result = $stmt->execute();
+    $stmt->close();
+    return $result;
 }

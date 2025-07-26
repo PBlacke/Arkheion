@@ -1,6 +1,7 @@
 <?php
 session_start();
-require '../config/config/connection.php';
+require '../config/connection.php';
+require '../includes/database.php';
 require '../config/auth.php';
 
 // Redirect if already logged in
@@ -8,6 +9,8 @@ if (isLoggedIn()) {
     redirectToDashboard($_SESSION['role']);
 }
 
+// Initialize DatabaseHelper
+$db = new DatabaseHelper($conn);
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -17,13 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($username) || empty($password)) {
         $error = "Please fill in all fields.";
     } else {
-        $auth_result = authenticateUser($conn, $username, $password);
+        $auth_result = authenticateUser($db, $username, $password); // Pass $db, not $conn
 
         if ($auth_result['success']) {
-            $user = $auth_result['user'];
-            $profile = getUserProfile($conn, $user['id'], $user['role']);
-            createUserSession($user, $profile);
-            redirectToDashboard($user['role']);
+            $profile = getUserProfile($db, $auth_result['user']['id'], $auth_result['user']['role']);
+            createUserSession($auth_result['user'], $profile);
+            redirectToDashboard($auth_result['user']['role']);
         } else {
             $error = $auth_result['message'];
         }
