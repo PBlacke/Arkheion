@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="shortcut icon" type="x-icon" href="image/favicon.png">
+    <link rel="stylesheet" href="./css/output.css">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -52,7 +53,7 @@
 
         <div class="row">
 
-            <div class="content">
+            <div class="content bg-orange-400">
                 <h3>Arkheion</h3>
                 <p style="margin-right: 0px; margin-bottom: 15px; margin-left: 0px; padding: 0px;">
                     A Comprehensive Research Repository with Intelligent Analytics
