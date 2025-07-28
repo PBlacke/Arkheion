@@ -63,7 +63,11 @@ $conn->close();
 <html>
 
 <head>
+<<<<<<< HEAD
     <title>Edit Paper</title>
+=======
+    <title>EVSU-OC</title>
+>>>>>>> d7e7207fa2a6626e7a9e8c310c1d967b0ad2637c
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -133,7 +137,11 @@ $conn->close();
                         ?>
 
                         <p><i class="fa fa-briefcase fa-fw w3-margin-right w3-large w3-text-red"></i><?php echo $username; ?></p>
+<<<<<<< HEAD
                         <p><i class="fa fa-home fa-fw w3-margin-right w3-large w3-text-red"></i>Arkheion</p>
+=======
+                        <p><i class="fa fa-home fa-fw w3-margin-right w3-large w3-text-red"></i>EVSU-OC</p>
+>>>>>>> d7e7207fa2a6626e7a9e8c310c1d967b0ad2637c
                         <hr>
 
                         <p class="w3-large"><b><i class="fa fa-asterisk fa-fw w3-margin-right w3-text-red"></i>

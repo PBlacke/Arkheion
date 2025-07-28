@@ -60,7 +60,11 @@ if (isset($_GET['search'])) {
 <html>
 
 <head>
+<<<<<<< HEAD
     <title>Search</title>
+=======
+    <title>EVSU-OC</title>
+>>>>>>> d7e7207fa2a6626e7a9e8c310c1d967b0ad2637c
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="x-icon" href="LOGO.png">

@@ -1,5 +1,9 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html lang="en">
+=======
+<html lang="en" data-theme="ark">
+>>>>>>> d7e7207fa2a6626e7a9e8c310c1d967b0ad2637c
 
 <head>
     <meta charset="UTF-8">
@@ -17,6 +21,7 @@
 </head>
 
 <body>
+<<<<<<< HEAD
 
     <header class="header">
         <div class="header-1">
@@ -58,6 +63,15 @@
                 <p style="margin-right: 0px; margin-bottom: 15px; margin-left: 0px; padding: 0px;">
                     A Comprehensive Research Repository with Intelligent Analytics
 
+=======
+    <?php include 'includes/header.php' ?>
+
+    <section class="home bg-base-200" id="home">
+        <div class="row">
+            <div class="content bg-primary">
+                <h3>Arkheion</h3>
+                <p style="margin-right: 0px; margin-bottom: 15px; margin-left: 0px; padding: 0px;">A Comprehensive Research Repository with Intelligent Analytics</p>
+>>>>>>> d7e7207fa2a6626e7a9e8c310c1d967b0ad2637c
             </div>
 
             <!-- Assuming you have established a database connection in your config/connection.php file -->
@@ -140,6 +154,7 @@
     </section>
 
     <!-- featured section end -->
+<<<<<<< HEAD
 
     <?php include 'includes/footer.php' ?>
 
@@ -195,6 +210,9 @@
         });
     </script>
 
+=======
+    <?php include 'includes/footer.php' ?>
+>>>>>>> d7e7207fa2a6626e7a9e8c310c1d967b0ad2637c
 </body>
 
 </html>
