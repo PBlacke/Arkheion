@@ -388,11 +388,6 @@ $totalPages = ceil($totalRecords / $recordsPerPage);
             <!-- End Page Container -->
         </div>
 
-        <!-- <footer class="w3-container w3-red w3-center w3-margin-top">
-  <p>Copyright © 2023. All rights reserved.</p>
-  <p>EVSU-OC ONLINE ARCHIVING SYSTEM</p>
-</footer> -->
-
 </body>
 
 </html>

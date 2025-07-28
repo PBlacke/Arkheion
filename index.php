@@ -1,9 +1,5 @@
 <!DOCTYPE html>
-<<<<<<< HEAD
-<html lang="en">
-=======
 <html lang="en" data-theme="ark">
->>>>>>> d7e7207fa2a6626e7a9e8c310c1d967b0ad2637c
 
 <head>
     <meta charset="UTF-8">
@@ -21,49 +17,7 @@
 </head>
 
 <body>
-<<<<<<< HEAD
-
-    <header class="header">
-        <div class="header-1">
-            <a href="" class="logo"><img src="image/LOGO.png" style="height: 100px;"></a>
-            <form action="search4.php" method="GET" class="search-form">
-                <input type="search" name="searchbar" placeholder="Search by title..." id="search-box">
-                <button type="submit" class="fas fa-search" aria-label="Search"></button>
-            </form>
-            <div class="icons">
-                <div id="search-btn" style="color: #0c1776;" class="fas fa-search"></div>
-                <div id="login-btn" style="color: #0c1776;"><a href='adminlogin.php'>admin login</a></div>
-            </div>
-            <div class="icons">
-                <div id="login-btn" style="color: #0c1776;"><a href='facultylogin.php'>staff login</a></div>
-            </div>
-            <div class="icons">
-                <div id="login-btn" style="color: #0c1776;"><a href='studentlogin.php'>student login</a></div>
-            </div>
-        </div>
-        <div class="header-2">
-            <!-- <nav class="navbar">
-        <a href="index.php">HOME</a>
-      </nav> -->
-        </div>
-    </header>
-
-    <div class="login-form-container">
-        <div id="close-login-btn" class="fas fa-times">
-
-        </div>
-    </div>
-
-    <section class="home" id="home">
-
-        <div class="row">
-
-            <div class="content bg-orange-400">
-                <h3>Arkheion</h3>
-                <p style="margin-right: 0px; margin-bottom: 15px; margin-left: 0px; padding: 0px;">
-                    A Comprehensive Research Repository with Intelligent Analytics
-
-=======
+    <!-- header -->
     <?php include 'includes/header.php' ?>
 
     <section class="home bg-base-200" id="home">
@@ -71,7 +25,6 @@
             <div class="content bg-primary">
                 <h3>Arkheion</h3>
                 <p style="margin-right: 0px; margin-bottom: 15px; margin-left: 0px; padding: 0px;">A Comprehensive Research Repository with Intelligent Analytics</p>
->>>>>>> d7e7207fa2a6626e7a9e8c310c1d967b0ad2637c
             </div>
 
             <!-- Assuming you have established a database connection in your config/connection.php file -->
@@ -153,66 +106,9 @@
         </div>
     </section>
 
-    <!-- featured section end -->
-<<<<<<< HEAD
-
+    <!-- footer -->
     <?php include 'includes/footer.php' ?>
 
-    <div class="loader-container">
-        <img src="image/loading.gif" alt="">
-
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-    <script src="script.js"></script>
-
-    <style>
-        .featured .featured-slider .box .content p {
-            font-size: 14px;
-            color: #666;
-            padding: 5px 0;
-            line-height: 1.3;
-        }
-
-        .featured .featured-slider .box .content p strong {
-            color: #0c1776;
-        }
-    </style>
-
-    <script>
-        var swiper = new Swiper(".featured-slider", {
-            spaceBetween: 10,
-            loop: true,
-            centeredSlides: true,
-            autoplay: {
-                delay: 9500,
-                disableOnInteraction: false,
-            },
-            navigation: {
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-            },
-            breakpoints: {
-                0: {
-                    slidesPerView: 1,
-                },
-                450: {
-                    slidesPerView: 2,
-                },
-                768: {
-                    slidesPerView: 3,
-                },
-                1024: {
-                    slidesPerView: 4,
-                },
-            },
-        });
-    </script>
-
-=======
-    <?php include 'includes/footer.php' ?>
->>>>>>> d7e7207fa2a6626e7a9e8c310c1d967b0ad2637c
 </body>
 
 </html>

@@ -50,11 +50,7 @@ $conn->close();
 <html>
 
 <head>
-<<<<<<< HEAD
     <title>Edit Department</title>
-=======
-    <title>EVSU-OC</title>
->>>>>>> d7e7207fa2a6626e7a9e8c310c1d967b0ad2637c
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

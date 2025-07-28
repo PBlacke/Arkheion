@@ -1,7 +1,7 @@
 <?php
 $host = "localhost"; // e.g., "localhost" or "127.0.0.1"
 $username = "root";
-$password = "";
+$password = "admin520";
 $database = "arkheion";
 
 // Create a connection

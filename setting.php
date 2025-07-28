@@ -134,16 +134,6 @@ if (!isset($_SESSION['admin_id'])) {
                         <!-- End Page Container -->
                     </div>
 
-<<<<<<< HEAD
-=======
-                    <!-- <footer class="w3-container w3-red w3-center w3-margin-top">
-  <p>Copyright © 2023. All rights reserved.</p>
-  <p>EVSU-OC ONLINE ARCHIVING SYSTEM</p>
-</footer> -->
-
-                    <p>Arkheion ONLINE ARCHIVING SYSTEM</p>
-
->>>>>>> d7e7207fa2a6626e7a9e8c310c1d967b0ad2637c
 </body>
 
 </html>

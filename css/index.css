@@ -39,20 +39,7 @@ html::-webkit-scrollbar-track{
 html::-webkit-scrollbar-thumb{
     background: var(--black);
 }
-.btn{
-    margin-top: 1rem;
-    display: inline-block;
-    padding: .9rem 3rem;
-    border-radius: .5rem;
-    color: #fff;
-    background: var(--maroon);
-    font-size: 1.7rem;
-    cursor: pointer;
-    font-weight: 500;
-}
-.btn:hover{
-    background: var(--dark-color);
-}
+
 .header .header-1{
     background: #fff;
     padding: 1.5rem 9%;
