@@ -152,7 +152,8 @@ class DatabaseHelper
                 f.*,
                 u.username,
                 u.email,
-                u.status as account_status
+                u.status as account_status,
+                f.status as faculty_status
             FROM faculty f
             JOIN users u ON f.user_id = u.id
         ";
@@ -191,10 +192,51 @@ class DatabaseHelper
         ]);
     }
 
+    public function getFacultyByStatus($statuses = [])
+    {
+        if (empty($statuses)) {
+            return $this->getFaculty();
+        }
+
+        $placeholders = implode(',', array_fill(0, count($statuses), '?'));
+        $types = str_repeat('s', count($statuses));
+
+        $sql = "
+        SELECT 
+            f.*,
+            u.username,
+            u.email,
+            u.status as account_status
+        FROM faculty f
+        JOIN users u ON f.user_id = u.id
+        WHERE f.status IN ($placeholders)
+    ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param($types, ...$statuses);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return $data;
+    }
+
     public function getFacultyMember($id)
     {
         $faculty = $this->getFaculty(['f.id' => $id]);
         return !empty($faculty) ? $faculty[0] : null;
+    }
+
+    public function addDepartment($department_code, $department_name, $description, $head_faculty_id, $status = 'active')
+    {
+        return $this->insert('departments', [
+            'department_code' => $department_code,
+            'department_name' => $department_name,
+            'description' => $description,
+            'head_faculty_id' => $head_faculty_id,
+            'status' => $status,
+        ]);
     }
 
     public function getFacultyByDepartment($department)
