@@ -34,3 +34,7 @@
     --depth: 0;
     --noise: 0;
 }
+
+@utility grid-cols-dashboard {
+    grid-template-columns: minmax(150px, 20%) 1fr;
+}

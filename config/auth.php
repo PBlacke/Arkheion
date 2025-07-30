@@ -76,13 +76,13 @@ function redirectToDashboard($role)
 {
     switch ($role) {
         case 'admin':
-            header("Location: ./dashbaord.php");
+            header("Location: ../admin/dashboard.php");
             break;
         case 'faculty':
-            header("Location: ../fac_dash.php");
+            header("Location: fac_dash.php");
             break;
         case 'student':
-            header("Location: ./student_dashboard.php");
+            header("Location: student_dashboard.php");
             break;
         default:
             header("Location: index.php");
@@ -107,7 +107,7 @@ function createUserSession($user, $profile = null)
 function requireRole($allowed_roles)
 {
     if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], $allowed_roles)) {
-        header("Location: unauthorized.php");
+        header("Location: /Arkheion/index.php");
         exit();
     }
 }
@@ -115,6 +115,32 @@ function requireRole($allowed_roles)
 function isLoggedIn()
 {
     return isset($_SESSION['user_id']) && isset($_SESSION['role']);
+}
+
+// Helper function to get the currently logged-in user's data
+function getLoggedInUser($connection)
+{
+    if (!isLoggedIn()) {
+        return null;
+    }
+
+    if ($connection instanceof DatabaseHelper) {
+        $db = $connection;
+    } else {
+        $db = new DatabaseHelper($connection);
+    }
+
+    $user_id = $_SESSION['user_id'];
+    $user = $db->fetchById('users', $user_id);
+
+    // Verify user is still active
+    if (!$user || $user['status'] !== 'active') {
+        // If user is no longer active, clear session
+        logout();
+        return null;
+    }
+
+    return $user;
 }
 
 function checkSessionTimeout($timeout = 1800)

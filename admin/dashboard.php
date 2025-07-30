@@ -1,16 +1,12 @@
 <?php
 // Include the connection file
-require 'config/connection.php';
+require '../config/connection.php';
+require_once '../config/auth.php';
 
 // Start the session
 session_start();
 
-// Check if the user is logged in
-// if (!isset($_SESSION['admin_id'])) {
-//     // Redirect to the login page if the user is not logged in
-//     header("Location: index.php");
-//     exit();
-// }
+requireRole(['admin']);
 
 // Define the number of records per page
 $recordsPerPage = 10;
@@ -45,113 +41,28 @@ $totalRecords = $totalRecordsResult->fetch_assoc()['total'];
 // Calculate the total number of pages
 $totalPages = ceil($totalRecords / $recordsPerPage);
 ?>
+
 <!DOCTYPE html>
-<html>
+<html data-theme="ark">
 
 <head>
     <title>Arkheion</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="x-icon" href="image/favicon.png">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/output.css">
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdnc.heyzine.com/release/jquery.pdfflipbook.3.js"></script>
-    <style>
-        html,
-        body,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            font-family: "Roboto", sans-serif
-        }
-    </style>
+    <link rel="stylesheet" href="../css/output.css">
 </head>
 
-<body class="w3-light-grey">
+<body>
+    <main class="flex justify-center min-h-screen px-8 bg-base-200">
+        <div class="grid grid-cols-dashboard gap-8 w-full max-w-[1440px]">
+            <?php include './nav.php'; ?>
 
-    <!-- Page Container -->
-    <div class="w3-content w3-margin-top" style="max-width:1400px;">
-
-        <!-- The Grid -->
-        <div class="w3-row-padding">
-
-            <?php include 'admin_nav.php'; ?>
-
-            <!-- Right Column -->
-            <div class="w3-twothird">
-
+            <div class="bg-base-100 w-full">
                 <div class="w3-container w3-card w3-white w3-margin-bottom">
                     <h2 style="color: #0c1776;" class="w3-padding-16"><i class="fa fa-dashboard fa-fw"></i>Dashboard</h2>
                     <div class="w3-container">
                         <h5 class="w3-opacity"><b>Welcome to Arkheion; Comprehensive Research Repository </b></h5>
-                        <style type="text/css">
-                            .clickable-box {
-                                cursor: pointer;
-                                padding: 1px;
-                                width: 15%;
-                                background-color: #4caf50;
-                                /* Green color, you can change it */
-                                color: white;
-                                border: none;
-                                border-radius: 4px;
-                                text-align: center;
-                                transition: background-color 0.3s;
-                                float: left;
-                                /* Float the box to the left */
-                                margin-bottom: 10px;
-                                /* Add margin at the bottom */
-                            }
-
-                            .clickable-box:hover {
-                                background-color: #45a049;
-                                /* Darker shade on hover, you can change it */
-                            }
-
-                            .search-container {
-                                float: right;
-                                /* Float the search container to the right */
-                                margin-top: 10px;
-                                margin-right: 20px;
-                            }
-
-                            .search-container input[type=text] {
-                                padding: 6px;
-                                margin-top: 2px;
-                                font-size: 14px;
-                                border: none;
-                            }
-
-                            .search-container button {
-                                padding: 6px 10px;
-                                margin-top: 2px;
-                                background: #4CAF50;
-                                color: white;
-                                font-size: 14px;
-                                border: none;
-                                cursor: pointer;
-                            }
-
-                            .search-container button:hover {
-                                background: #45a049;
-                            }
-
-                            .search-container input[type=text] {
-                                padding: 6px;
-                                margin-top: 2px;
-                                font-size: 14px;
-                                border: 1px solid #ccc;
-                                /* Add a border to the input */
-                                border-radius: 4px;
-                                /* Optional: Add rounded corners to the input */
-                            }
-                        </style>
-
                         <div class="clickable-box" onclick="location.href='add.php';">
                             <h5><b>Add New</b></h5>
                         </div>
@@ -293,18 +204,9 @@ $totalPages = ceil($totalRecords / $recordsPerPage);
                         <hr>
                     </div>
                 </div>
-
-                <!-- End Grid -->
             </div>
-
-            <!-- End Page Container -->
         </div>
-
-        <!-- <footer class="w3-container w3-red w3-center w3-margin-top">
-  <p>Copyright © 2023. All rights reserved.</p>
-  <p>EVSU-OC ONLINE ARCHIVING SYSTEM</p>
-</footer> -->
-
+    </main>
 </body>
 
 </html>

@@ -1,19 +1,13 @@
-<header class="flex w-full h-24 bg-base-100">
-    <a href="./" class="logo">
+<header class="navbar bg-base-100 shadow-sm h-20">
+    <a href="./index.php" class="navbar-start h-full">
         <img src="image/LOGO.png" class="h-full">
     </a>
-    <form action="search4.php" method="GET" class="search-form">
+    <form action="search4.php" method="GET" class="search-form navbar-center">
         <input type="search" name="searchbar" placeholder="Search by title..." id="search-box">
         <button type="submit" class="fas fa-search" aria-label="Search"></button>
     </form>
-    <div class="icons">
+    <div class="navbar-end">
         <div id="search-btn" style="color: #0c1776;" class="fas fa-search"></div>
-        <div id="login-btn" style="color: #0c1776;"><a href='adminlogin.php'>admin login</a></div>
-    </div>
-    <div class="icons">
-        <div id="login-btn" style="color: #0c1776;"><a href='facultylogin.php'>staff login</a></div>
-    </div>
-    <div class="icons">
-        <div id="login-btn" style="color: #0c1776;"><a href='studentlogin.php'>student login</a></div>
+        <div id="login-btn" style="color: #0c1776;"><a href='./auth/login.php'>Login</a></div>
     </div>
 </header>

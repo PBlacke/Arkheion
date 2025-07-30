@@ -12,26 +12,41 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    IF NOT EXISTS `faculty` (
+    IF NOT EXISTS `departments` (
         `id` INT PRIMARY KEY AUTO_INCREMENT,
-        `user_id` INT NOT NULL UNIQUE,
-        `first_name` VARCHAR(100) DEFAULT NULL,
-        `middle_name` VARCHAR(100) DEFAULT NULL,
-        `last_name` VARCHAR(100) DEFAULT NULL,
-        `suffix` VARCHAR(20) DEFAULT NULL,
-        `birthdate` DATE DEFAULT NULL,
-        `address` TEXT DEFAULT NULL,
-        `department` VARCHAR(255) NOT NULL,
-        `employee_id` VARCHAR(255) NOT NULL UNIQUE,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        `department_code` VARCHAR(10) NOT NULL UNIQUE, -- e.g., 'CS', 'IT', 'ENG'
+        `department_name` VARCHAR(255) NOT NULL,
+        `description` TEXT,
+        `head_faculty_id` INT DEFAULT NULL, -- Department head
+        `status` ENUM ('active', 'inactive') NOT NULL DEFAULT 'active',
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_department_code (department_code),
+        INDEX idx_status (status)
     );
 
 CREATE TABLE
-    IF NOT EXISTS `department` (
-        `id` int (11) NOT NULL AUTO_INCREMENT,
-        `department_name` varchar(255) NOT NULL,
-        `status` varchar(255) NOT NULL,
-        PRIMARY KEY (`id`)
+    IF NOT EXISTS `faculty` (
+        `id` INT PRIMARY KEY AUTO_INCREMENT,
+        `user_id` INT NOT NULL UNIQUE,
+        `first_name` VARCHAR(100) NOT NULL, -- Made required
+        `middle_name` VARCHAR(100) DEFAULT NULL,
+        `last_name` VARCHAR(100) NOT NULL, -- Made required
+        `suffix` VARCHAR(20) DEFAULT NULL,
+        `birthdate` DATE DEFAULT NULL,
+        `address` TEXT DEFAULT NULL,
+        `phone` VARCHAR(20) DEFAULT NULL,
+        `department_id` INT NOT NULL, -- Changed to reference departments.id
+        `position` VARCHAR(100) DEFAULT NULL, -- e.g., 'Professor', 'Associate Professor'
+        `specialization` TEXT DEFAULT NULL,
+        `hire_date` DATE DEFAULT NULL,
+        `status` ENUM ('active', 'inactive', 'on_leave') DEFAULT 'active',
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (department_id) REFERENCES departments (id) ON DELETE RESTRICT,
+        INDEX idx_department (department_id),
+        INDEX idx_status (status)
     );
 
 CREATE TABLE
@@ -54,7 +69,7 @@ CREATE TABLE
         ) NOT NULL,
         `department_id` INT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-        FOREIGN KEY (department_id) REFERENCES department (id)
+        FOREIGN KEY (department_id) REFERENCES departments (id)
     );
 
 CREATE TABLE
@@ -80,17 +95,31 @@ CREATE TABLE
         `department_id` INT NOT NULL,
         `status` ENUM ('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
         `registration_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (department_id) REFERENCES department (id)
+        FOREIGN KEY (department_id) REFERENCES departments (id)
     );
 
 CREATE TABLE
-    IF NOT EXISTS `curriculum` (
-        `id` int (11) NOT NULL AUTO_INCREMENT,
-        `department` varchar(255) NOT NULL,
-        `curriculum` varchar(255) DEFAULT NULL,
-        `status` varchar(255) DEFAULT 'default_value',
-        `status2` varchar(255) DEFAULT NULL,
-        PRIMARY KEY (`id`)
+    IF NOT EXISTS `curricula` (
+        `id` INT PRIMARY KEY AUTO_INCREMENT,
+        `curriculum_code` VARCHAR(20) NOT NULL, -- e.g., 'CS-2024', 'IT-2023'
+        `curriculum_name` VARCHAR(255) NOT NULL,
+        `department_id` INT NOT NULL,
+        `academic_year` VARCHAR(9) NOT NULL, -- e.g., '2023-2024'
+        `total_units` INT DEFAULT 0,
+        `duration_years` DECIMAL(2, 1) DEFAULT 4.0,
+        `status` ENUM ('draft', 'active', 'archived', 'deprecated') DEFAULT 'draft',
+        `effective_date` DATE,
+        `created_by` INT NOT NULL, -- Faculty who created it
+        `approved_by` INT DEFAULT NULL, -- Admin/Faculty who approved
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (department_id) REFERENCES departments (id) ON DELETE RESTRICT,
+        FOREIGN KEY (created_by) REFERENCES faculty (id) ON DELETE RESTRICT,
+        FOREIGN KEY (approved_by) REFERENCES faculty (id) ON DELETE SET NULL,
+        UNIQUE KEY unique_curriculum (department_id, curriculum_code),
+        INDEX idx_department (department_id),
+        INDEX idx_academic_year (academic_year),
+        INDEX idx_status (status)
     );
 
 CREATE TABLE
@@ -114,19 +143,53 @@ CREATE TABLE
 
 CREATE TABLE
     IF NOT EXISTS `notifications` (
-        `id` int (11) NOT NULL AUTO_INCREMENT,
-        `faculty_id` int (11) DEFAULT NULL,
-        `user_id` int (11) DEFAULT NULL,
-        `message` text NOT NULL,
-        `type` varchar(50) NOT NULL,
-        `reference_id` int (11) DEFAULT NULL,
-        `created_at` timestamp NULL DEFAULT current_timestamp(),
-        `is_read` tinyint (1) DEFAULT 0,
-        PRIMARY KEY (`id`),
-        KEY `faculty_id` (`faculty_id`),
-        KEY `user_id` (`user_id`),
-        CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`) ON DELETE CASCADE,
-        CONSTRAINT `notifications_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
+        `id` INT PRIMARY KEY AUTO_INCREMENT,
+        `recipient_id` INT NOT NULL, -- Who receives the notification
+        `sender_id` INT DEFAULT NULL, -- Who sent/triggered the notification
+        `title` VARCHAR(255) NOT NULL,
+        `message` TEXT NOT NULL,
+        `type` ENUM (
+            'file_upload',
+            'file_approved',
+            'file_rejected',
+            'curriculum_update',
+            'account_approved',
+            'account_rejected',
+            'system',
+            'reminder',
+            'announcement'
+        ) NOT NULL,
+        `priority` ENUM ('low', 'normal', 'high', 'urgent') DEFAULT 'normal',
+        `reference_table` VARCHAR(50) DEFAULT NULL, -- e.g., 'files', 'curricula'
+        `reference_id` INT DEFAULT NULL,
+        `is_read` BOOLEAN DEFAULT FALSE,
+        `read_at` TIMESTAMP NULL DEFAULT NULL,
+        `expires_at` TIMESTAMP NULL DEFAULT NULL, -- For temporary notifications
+        `action_url` VARCHAR(500) DEFAULT NULL, -- Deep link to relevant page
+        `metadata` JSON DEFAULT NULL, -- Additional notification data
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (recipient_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE SET NULL,
+        INDEX idx_recipient (recipient_id),
+        INDEX idx_type (type),
+        INDEX idx_is_read (is_read),
+        INDEX idx_created_at (created_at),
+        INDEX idx_expires_at (expires_at)
+    );
+
+CREATE TABLE
+    IF NOT EXISTS `file_access_logs` (
+        `id` INT PRIMARY KEY AUTO_INCREMENT,
+        `file_id` INT NOT NULL,
+        `user_id` INT NOT NULL,
+        `action` ENUM ('view', 'download', 'share') NOT NULL,
+        `ip_address` VARCHAR(45) DEFAULT NULL,
+        `user_agent` TEXT DEFAULT NULL,
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (file_id) REFERENCES files (id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+        INDEX idx_file_user (file_id, user_id),
+        INDEX idx_created_at (created_at)
     );
 
 -- Insert default admin account
@@ -142,10 +205,40 @@ VALUES
     );
 
 -- Optional: Insert some default departments
-INSERT IGNORE INTO `department` (`department_name`, `status`)
+INSERT IGNORE INTO `departments` (
+    `department_code`,
+    `department_name`,
+    `description`,
+    `status`
+)
 VALUES
-    ('Computer Science', 'active'),
-    ('Information Technology', 'active'),
-    ('Engineering', 'active'),
-    ('Business Administration', 'active'),
-    ('Education', 'active');
+    (
+        'CS',
+        'Computer Science',
+        'Department of Computer Science focusing on software development, algorithms, and computing theory',
+        'active'
+    ),
+    (
+        'IT',
+        'Information Technology',
+        'Department of Information Technology specializing in systems administration and IT infrastructure',
+        'active'
+    ),
+    (
+        'ENG',
+        'Engineering',
+        'Department of Engineering covering various engineering disciplines',
+        'active'
+    ),
+    (
+        'BA',
+        'Business Administration',
+        'Department of Business Administration for management and business studies',
+        'active'
+    ),
+    (
+        'ED',
+        'Education',
+        'Department of Education for teacher preparation and educational studies',
+        'active'
+    );

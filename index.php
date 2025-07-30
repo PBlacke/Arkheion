@@ -19,17 +19,16 @@
 <body>
     <?php include 'includes/header.php' ?>
 
-    <section class="home bg-base-200" id="home">
+    <section class="flex bg-base-200">
         <div class="row">
-            <div class="content bg-primary">
+            <div class="bg-primary">
                 <h3>Arkheion</h3>
-                <p style="margin-right: 0px; margin-bottom: 15px; margin-left: 0px; padding: 0px;">A Comprehensive Research Repository with Intelligent Analytics</p>
+                <p>A Comprehensive Research Repository with Intelligent Analytics</p>
             </div>
 
-            <!-- Assuming you have established a database connection in your config/connection.php file -->
-            <?php require 'config/connection.php'; ?>
-
             <div class="swiper books-slider">
+                <?php require 'config/connection.php'; ?>
+                <!-- Assuming you have established a database connection in your config/connection.php file -->
                 <div class="swiper-wrapper">
                     <?php
                     // Fetch image paths from the database
@@ -49,11 +48,9 @@
                     $conn->close();
                     ?>
                 </div>
-                <img src="image/stand.png" alt="" class="stand">
+                <img src="image/stand.png" alt="" class="">
             </div>
-
         </div>
-
     </section>
 
     <!-- featured section start -->

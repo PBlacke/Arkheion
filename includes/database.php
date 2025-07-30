@@ -62,6 +62,59 @@ class DatabaseHelper
         return $this->fetchOne($table, ['id' => $id]);
     }
 
+    // Generic Insert
+    public function insert($table, $data)
+    {
+        $fields = implode(", ", array_keys($data));
+        $placeholders = implode(", ", array_fill(0, count($data), "?"));
+        $types = "";
+        $values = [];
+
+        foreach ($data as $value) {
+            $types .= $this->getParamType($value);
+            $values[] = $value;
+        }
+
+        $sql = "INSERT INTO $table ($fields) VALUES ($placeholders)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param($types, ...$values);
+        $stmt->execute();
+        $insert_id = $stmt->insert_id;
+        $stmt->close();
+
+        return $insert_id;
+    }
+
+    // Generic Update
+    public function update($table, $data, $conditions)
+    {
+        $setClause = [];
+        $whereClause = [];
+        $types = "";
+        $values = [];
+
+        foreach ($data as $field => $value) {
+            $setClause[] = "$field = ?";
+            $types .= $this->getParamType($value);
+            $values[] = $value;
+        }
+
+        foreach ($conditions as $field => $value) {
+            $whereClause[] = "$field = ?";
+            $types .= $this->getParamType($value);
+            $values[] = $value;
+        }
+
+        $sql = "UPDATE $table SET " . implode(", ", $setClause) . " WHERE " . implode(" AND ", $whereClause);
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param($types, ...$values);
+        $stmt->execute();
+        $affected_rows = $stmt->affected_rows;
+        $stmt->close();
+
+        return $affected_rows;
+    }
+
     // Specific entity functions
     public function getStudents($filters = [])
     {
@@ -74,7 +127,7 @@ class DatabaseHelper
                 d.department_name
             FROM students s
             JOIN users u ON s.user_id = u.id
-            JOIN department d ON s.department_id = d.id
+            JOIN departments d ON s.department_id = d.id
         ";
 
         return $this->executeCustomQuery($sql, $filters);
@@ -107,6 +160,37 @@ class DatabaseHelper
         return $this->executeCustomQuery($sql, $filters);
     }
 
+    public function addUser($username, $email, $password, $role = 'faculty', $status = 'active')
+    {
+        return $this->insert('users', [
+            'username' => $username,
+            'email' => $email,
+            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'role' => $role,
+            'status' => $status,
+        ]);
+    }
+
+    // Add new faculty (requires user_id)
+    public function addFaculty($user_id, $first_name, $middle_name, $last_name, $suffix, $birthdate, $address, $phone, $department_id, $position, $specialization, $hire_date, $status = 'active')
+    {
+        return $this->insert('faculty', [
+            'user_id' => $user_id,
+            'first_name' => $first_name,
+            'middle_name' => $middle_name,
+            'last_name' => $last_name,
+            'suffix' => $suffix,
+            'birthdate' => $birthdate,
+            'address' => $address,
+            'phone' => $phone,
+            'department_id' => $department_id,
+            'position' => $position,
+            'specialization' => $specialization,
+            'hire_date' => $hire_date,
+            'status' => $status,
+        ]);
+    }
+
     public function getFacultyMember($id)
     {
         $faculty = $this->getFaculty(['f.id' => $id]);
@@ -115,18 +199,18 @@ class DatabaseHelper
 
     public function getFacultyByDepartment($department)
     {
-        return $this->getFaculty(['f.department' => $department]);
+        return $this->getFaculty(['f.departments' => $department]);
     }
 
     public function getDepartments($active_only = true)
     {
         $conditions = $active_only ? ['status' => 'active'] : [];
-        return $this->fetchAll('department', $conditions, 'department_name ASC');
+        return $this->fetchAll('departments', $conditions, 'department_name ASC');
     }
 
     public function getDepartment($id)
     {
-        return $this->fetchById('department', $id);
+        return $this->fetchById('departments', $id);
     }
 
     public function getUsers($role = null)
@@ -142,7 +226,7 @@ class DatabaseHelper
                 f.*,
                 d.department_name
             FROM files f
-            LEFT JOIN department d ON f.department = d.department_name
+            LEFT JOIN departments d ON f.departments = d.department_name
         ";
 
         return $this->executeCustomQuery($sql, $filters);
