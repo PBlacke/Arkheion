@@ -116,7 +116,7 @@ $csrf_token = SecurityValidator::generateCSRFToken();
         <div class="grid grid-cols-dashboard gap-4 w-full">
             <?php include './nav.php'; ?>
 
-            <div class="flex flex-col gap-4 p-8 bg-base-100">
+            <div class="flex flex-col gap-4 p-8 bg-base-100 rounded-box shadow-lg">
                 <div class="flex justify-between items-center w-full">
                     <h1 class="text-2xl font-bold">Faculty List</h1>
                     <label for="add_faculty_modal" class="btn btn-primary">Add Faculty</label>
