@@ -36,5 +36,5 @@
 }
 
 @utility grid-cols-dashboard {
-    grid-template-columns: minmax(150px, 20%) 1fr;
+    grid-template-columns: minmax(200px, 18%) 1fr;
 }

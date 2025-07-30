@@ -6,7 +6,7 @@ require_once '../includes/database.php';
 $current_user = getLoggedInUser($db);
 ?>
 
-<section class="flex flex-col w-full bg-base-100">
+<section class="flex flex-col w-full bg-base-100 rounded-box shadow-lg">
     <div class="flex flex-col px-5 py-2">
         <p class="text-2xl text-center font-bold my-2">Arkheion</p>
         <div class="avatar avatar-placeholder justify-center py-2">
