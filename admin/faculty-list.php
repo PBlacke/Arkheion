@@ -14,73 +14,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Invalid request. Please try again.");
         }
 
+        // Rate limiting (optional)
+        if (!SecurityValidator::checkRateLimit($_SERVER['REMOTE_ADDR'] . '_faculty_add', 3, 300)) {
+            throw new Exception("Too many attempts. Please wait 5 minutes before trying again.");
+        }
+
         // Initialize validators
         $validator = new FormValidator($_POST);
         $dbValidator = new DatabaseValidator($db);
 
-        // Define validation rules
-        $validationRules = [
-            'username' => [
-                'required' => true,
-                'type' => 'username'
-            ],
-            'email' => [
-                'required' => true,
-                'type' => 'email'
-            ],
-            'password' => [
-                'required' => true,
-                'type' => 'password'
-            ],
-            'first_name' => [
-                'required' => true,
-                'type' => 'name',
-                'label' => 'First name'
-            ],
-            'middle_name' => [
-                'required' => false,
-                'type' => 'name',
-                'label' => 'Middle name'
-            ],
-            'last_name' => [
-                'required' => true,
-                'type' => 'name',
-                'label' => 'Last name'
-            ],
-            'suffix' => [
-                'required' => false,
-                'type' => 'name',
-                'label' => 'Suffix'
-            ],
-            'birthdate' => [
-                'required' => true,
-                'type' => 'date'
-            ],
-            'address' => [
-                'required' => true,
-                'length' => ['min' => 10, 'max' => 255]
-            ],
-            'phone' => [
-                'required' => true,
-                'type' => 'phone'
-            ],
-            'department' => [
-                'required' => true,
-                'type' => 'numeric',
-                'label' => 'Department'
-            ],
-            'position' => [
-                'required' => false,
-                'length' => ['min' => 2, 'max' => 100]
-            ],
-            'specialization' => [
-                'required' => false,
-                'length' => ['min' => 2, 'max' => 255]
-            ]
-        ];
+        // Chain validation methods - only validate format/rules, not required fields
+        $validator->validateUsername('username')
+            ->validateEmail('email')
+            ->validatePassword('password')
+            ->validateName('first_name', 'First name')
+            ->validateName('middle_name', 'Middle name')
+            ->validateName('last_name', 'Last name')
+            ->validateName('suffix', 'Suffix')
+            ->validateDate('birthdate')
+            ->validateLength('address', 10, 255, 'Address')
+            ->validatePhone('phone')
+            ->validateNumeric('department', 'Department')
+            ->validateLength('position', 2, 100, 'Position')
+            ->validateLength('specialization', 2, 255, 'Specialization');
 
-        // Validate form data
-        if (!$validator->validateFields($validationRules)) {
+        // Check if basic validation passed
+        if (!$validator->isValid()) {
             throw new Exception($validator->getErrorsAsString());
         }
 
@@ -88,49 +47,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $data = $validator->getSanitizedData();
 
         // Database-specific validations
-        if (!$dbValidator->validateUniqueEmail($data['email'])) {
+        if (!$dbValidator->isEmailUnique($data['email'])) {
             throw new Exception("Email address is already registered");
         }
 
-        if (!$dbValidator->validateUniqueUsername($data['username'])) {
+        if (!$dbValidator->isUsernameUnique($data['username'])) {
             throw new Exception("Username is already taken");
         }
 
-        if (!$dbValidator->validateDepartmentExists($data['department'])) {
+        if (!$dbValidator->departmentExists($data['department'])) {
             throw new Exception("Selected department is not valid");
         }
 
-        // Process the form
+        // If validation passes, process the form
         $new_user_id = $db->addUser(
-            $_POST['username'],
-            $_POST['email'],
-            $_POST['password']
+            $data['username'],
+            $data['email'],
+            $data['password']
         );
 
         $faculty_id = $db->addFaculty(
             $new_user_id,
-            $_POST['first_name'],
-            $_POST['middle_name'],
-            $_POST['last_name'],
-            $_POST['suffix'] ?? null,
-            $_POST['birthdate'],
-            $_POST['address'],
-            $_POST['phone'],
-            $_POST['department'],
-            $_POST['position'] ?? null,
-            $_POST['specialization'] ?? null,
-            date('Y-m-d'),
+            $data['first_name'],
+            $data['middle_name'],
+            $data['last_name'],
+            $data['suffix'] ?? null,
+            $data['birthdate'],
+            $data['address'],
+            $data['phone'],
+            $data['department'],
+            $data['position'] ?? null,
+            $data['specialization'] ?? null,
+            date('Y-m-d')
         );
 
-        // Set success message in session
         $_SESSION['success_message'] = "Faculty member added successfully!";
-
-        // Redirect to prevent resubmission
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     } catch (Exception $e) {
-        // Set error message in session
-        $_SESSION['error_message'] = "Error adding faculty: " . $e->getMessage();
+        $_SESSION['error_message'] = $e->getMessage();
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     }
@@ -161,7 +116,7 @@ $csrf_token = SecurityValidator::generateCSRFToken();
         <div class="grid grid-cols-dashboard gap-4 w-full">
             <?php include './nav.php'; ?>
 
-            <div class="flex flex-col gap-4 p-8 bg-base-100 rounded-box shadow-lg">
+            <div class="flex flex-col gap-4 p-8 bg-base-100">
                 <div class="flex justify-between items-center w-full">
                     <h1 class="text-2xl font-bold">Faculty List</h1>
                     <label for="add_faculty_modal" class="btn btn-primary">Add Faculty</label>
@@ -177,7 +132,7 @@ $csrf_token = SecurityValidator::generateCSRFToken();
                 <!-- Error Message -->
                 <?php if ($error_message): ?>
                     <div class="alert alert-error">
-                        <span><?php echo htmlspecialchars($error_message); ?></span>
+                        <span><?php echo $error_message; ?></span>
                     </div>
                 <?php endif; ?>
 

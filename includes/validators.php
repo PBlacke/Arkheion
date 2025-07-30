@@ -1,5 +1,5 @@
 <?php
-// includes/validators.php - Reusable validation classes
+// includes/validators.php - Simplified validation classes
 
 class FormValidator
 {
@@ -11,82 +11,145 @@ class FormValidator
         $this->data = $postData;
     }
 
-    // Generic validation method - more flexible approach
-    public function validate($rules)
+    // Simple validation methods that can be chained
+    public function validateEmail($field, $message = null)
     {
-        $this->errors = [];
+        $value = $this->data[$field] ?? '';
+        if (!empty($value) && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            $this->errors[] = $message ?: "Please enter a valid email address";
+        }
+        return $this;
+    }
 
-        foreach ($rules as $field => $fieldRules) {
-            foreach ($fieldRules as $rule) {
-                $method = $rule['method'];
-                $params = $rule['params'] ?? [];
+    public function validateUsername($field, $message = null)
+    {
+        $value = $this->data[$field] ?? '';
+        if (!empty($value)) {
+            if (strlen($value) < 3) {
+                $this->errors[] = $message ?: "Username must be at least 3 characters long";
+            } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $value)) {
+                $this->errors[] = $message ?: "Username can only contain letters, numbers, and underscores";
+            }
+        }
+        return $this;
+    }
 
-                if (method_exists($this, $method)) {
-                    call_user_func_array([$this, $method], array_merge([$field], $params));
+    public function validatePassword($field, $message = null)
+    {
+        $value = $this->data[$field] ?? '';
+        if (!empty($value)) {
+            if (strlen($value) < 8) {
+                $this->errors[] = $message ?: "Password must be at least 8 characters long";
+            } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/', $value)) {
+                $this->errors[] = $message ?: "Password must contain at least one lowercase letter, one uppercase letter, and one number";
+            }
+        }
+        return $this;
+    }
+
+    public function validateName($field, $fieldName = null)
+    {
+        $value = $this->data[$field] ?? '';
+        $fieldName = $fieldName ?: ucfirst(str_replace('_', ' ', $field));
+
+        if (!empty($value)) {
+            if (strlen($value) < 2 || strlen($value) > 50) {
+                $this->errors[] = "$fieldName must be between 2 and 50 characters";
+            } elseif (!preg_match('/^[a-zA-Z\s\'-\.]+$/', $value)) {
+                $this->errors[] = "$fieldName can only contain letters, spaces, hyphens, apostrophes, and periods";
+            }
+        }
+        return $this;
+    }
+
+    public function validateDate($field, $fieldName = null)
+    {
+        $value = $this->data[$field] ?? '';
+        $fieldName = $fieldName ?: ucfirst(str_replace('_', ' ', $field));
+
+        if (!empty($value)) {
+            $dateObj = DateTime::createFromFormat('Y-m-d', $value);
+            if (!$dateObj || $dateObj->format('Y-m-d') !== $value) {
+                $this->errors[] = "Please enter a valid $fieldName";
+            } else {
+                $today = new DateTime();
+                $age = $today->diff($dateObj)->y;
+
+                if ($dateObj > $today) {
+                    $this->errors[] = "$fieldName cannot be in the future";
+                } elseif ($age > 100 || $age < 18) {
+                    $this->errors[] = "$fieldName must be valid (18-100 years old)";
                 }
             }
         }
-
-        return empty($this->errors);
+        return $this;
     }
 
-    // Convenience method for common validation patterns
-    public function validateFields($fieldRules)
+    public function validatePhone($field, $message = null)
     {
-        $this->errors = [];
-
-        foreach ($fieldRules as $field => $rules) {
-            if (isset($rules['required']) && $rules['required']) {
-                $message = $rules['required_message'] ?? ucfirst(str_replace('_', ' ', $field)) . ' is required';
-                $this->validateRequired($field, $message);
-            }
-
-            if (isset($rules['type'])) {
-                switch ($rules['type']) {
-                    case 'email':
-                        $this->validateEmail($field);
-                        break;
-                    case 'username':
-                        $this->validateUsername($field);
-                        break;
-                    case 'password':
-                        $this->validatePassword($field);
-                        break;
-                    case 'name':
-                        $this->validateName($field, $rules['label'] ?? ucfirst(str_replace('_', ' ', $field)), $rules['required'] ?? true);
-                        break;
-                    case 'date':
-                        $this->validateDate($field);
-                        break;
-                    case 'phone':
-                        $this->validatePhone($field);
-                        break;
-                    case 'numeric':
-                        $this->validateNumeric($field, $rules['label'] ?? ucfirst(str_replace('_', ' ', $field)));
-                        break;
-                }
-            }
-
-            if (isset($rules['length'])) {
-                $min = $rules['length']['min'] ?? 0;
-                $max = $rules['length']['max'] ?? 255;
-                $required = $rules['required'] ?? true;
-                $label = $rules['label'] ?? ucfirst(str_replace('_', ' ', $field));
-                $this->validateLength($field, $label, $min, $max, $required);
-            }
-
-            if (isset($rules['custom']) && is_callable($rules['custom'])) {
-                $result = $rules['custom']($this->data[$field] ?? '');
-                if ($result !== true) {
-                    $this->errors[] = $result;
-                }
+        $value = $this->data[$field] ?? '';
+        if (!empty($value)) {
+            $cleanPhone = preg_replace('/[^0-9]/', '', $value);
+            if (strlen($cleanPhone) < 10 || strlen($cleanPhone) > 15) {
+                $this->errors[] = $message ?: "Please enter a valid phone number";
             }
         }
+        return $this;
+    }
 
+    public function validateLength($field, $min, $max, $fieldName = null)
+    {
+        $value = $this->data[$field] ?? '';
+        $fieldName = $fieldName ?: ucfirst(str_replace('_', ' ', $field));
+
+        if (!empty($value)) {
+            $length = strlen($value);
+            if ($length < $min || $length > $max) {
+                $this->errors[] = "$fieldName must be between $min and $max characters";
+            }
+        }
+        return $this;
+    }
+
+    public function validateNumeric($field, $fieldName = null)
+    {
+        $value = $this->data[$field] ?? '';
+        $fieldName = $fieldName ?: ucfirst(str_replace('_', ' ', $field));
+
+        if (!empty($value) && !is_numeric($value)) {
+            $this->errors[] = "$fieldName must be a valid selection";
+        }
+        return $this;
+    }
+
+    public function validateStudentId($field, $message = null)
+    {
+        $value = $this->data[$field] ?? '';
+        if (!empty($value)) {
+            // Adjust pattern based on your student ID format
+            if (!preg_match('/^\d{4}-\d{4}$/', $value)) {
+                $this->errors[] = $message ?: "Student ID must be in format YYYY-NNNN";
+            }
+        }
+        return $this;
+    }
+
+    // Custom validation with callback
+    public function validateCustom($field, $callback, $message)
+    {
+        $value = $this->data[$field] ?? '';
+        if (!empty($value) && !$callback($value)) {
+            $this->errors[] = $message;
+        }
+        return $this;
+    }
+
+    // Check if validation passed
+    public function isValid()
+    {
         return empty($this->errors);
     }
 
-    // Common validation methods
     public function getErrors()
     {
         return $this->errors;
@@ -101,163 +164,15 @@ class FormValidator
     {
         $sanitized = [];
         foreach ($this->data as $key => $value) {
-            $sanitized[$key] = $this->sanitize($value);
+            $sanitized[$key] = htmlspecialchars(trim($value), ENT_QUOTES, 'UTF-8');
         }
         return $sanitized;
     }
 
-    // Private validation methods
-    private function validateRequired($field, $message)
-    {
-        if (empty(trim($this->data[$field] ?? ''))) {
-            $this->errors[] = $message;
-            return false;
-        }
-        return true;
-    }
-
-    private function validateEmail($field)
-    {
-        if (!empty($this->data[$field]) && !filter_var($this->data[$field], FILTER_VALIDATE_EMAIL)) {
-            $this->errors[] = "Please enter a valid email address";
-            return false;
-        }
-        return true;
-    }
-
-    private function validateUsername($field)
-    {
-        $username = $this->data[$field] ?? '';
-        if (!empty($username)) {
-            if (strlen($username) < 3) {
-                $this->errors[] = "Username must be at least 3 characters long";
-                return false;
-            }
-            if (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
-                $this->errors[] = "Username can only contain letters, numbers, and underscores";
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private function validatePassword($field)
-    {
-        $password = $this->data[$field] ?? '';
-        if (!empty($password)) {
-            if (strlen($password) < 8) {
-                $this->errors[] = "Password must be at least 8 characters long";
-                return false;
-            }
-            if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/', $password)) {
-                $this->errors[] = "Password must contain at least one lowercase letter, one uppercase letter, and one number";
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private function validateName($field, $fieldName, $required = true)
+    // Get single sanitized field
+    public function getSanitized($field)
     {
         $value = $this->data[$field] ?? '';
-        if (!$required && empty($value)) {
-            return true;
-        }
-
-        if (!empty($value)) {
-            if (strlen($value) < 2 || strlen($value) > 50) {
-                $this->errors[] = "$fieldName must be between 2 and 50 characters";
-                return false;
-            }
-            if (!preg_match('/^[a-zA-Z\s\'-\.]+$/', $value)) {
-                $this->errors[] = "$fieldName can only contain letters, spaces, hyphens, apostrophes, and periods";
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private function validateDate($field)
-    {
-        $date = $this->data[$field] ?? '';
-        if (!empty($date)) {
-            $dateObj = DateTime::createFromFormat('Y-m-d', $date);
-            if (!$dateObj || $dateObj->format('Y-m-d') !== $date) {
-                $this->errors[] = "Please enter a valid birthdate";
-                return false;
-            }
-
-            $today = new DateTime();
-            $age = $today->diff($dateObj)->y;
-
-            if ($dateObj > $today) {
-                $this->errors[] = "Birthdate cannot be in the future";
-                return false;
-            }
-
-            if ($age > 100 || $age < 18) {
-                $this->errors[] = "Please enter a valid birthdate (must be 18-100 years old)";
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private function validatePhone($field)
-    {
-        $phone = $this->data[$field] ?? '';
-        if (!empty($phone)) {
-            $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
-            if (strlen($cleanPhone) < 10 || strlen($cleanPhone) > 15) {
-                $this->errors[] = "Please enter a valid phone number";
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private function validateNumeric($field, $fieldName)
-    {
-        $value = $this->data[$field] ?? '';
-        if (!empty($value) && !is_numeric($value)) {
-            $this->errors[] = "$fieldName must be a valid selection";
-            return false;
-        }
-        return true;
-    }
-
-    private function validateLength($field, $fieldName, $min, $max, $required = true)
-    {
-        $value = $this->data[$field] ?? '';
-        if (!$required && empty($value)) {
-            return true;
-        }
-
-        if (!empty($value)) {
-            $length = strlen($value);
-            if ($length < $min || $length > $max) {
-                $this->errors[] = "$fieldName must be between $min and $max characters";
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private function validateStudentId($field)
-    {
-        $studentId = $this->data[$field] ?? '';
-        if (!empty($studentId)) {
-            // Adjust pattern based on your student ID format
-            if (!preg_match('/^\d{4}-\d{4}$/', $studentId)) {
-                $this->errors[] = "Student ID must be in format YYYY-NNNN";
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private function sanitize($value)
-    {
         return htmlspecialchars(trim($value), ENT_QUOTES, 'UTF-8');
     }
 }
@@ -271,7 +186,7 @@ class DatabaseValidator
         $this->db = $database;
     }
 
-    public function validateUniqueEmail($email, $excludeUserId = null)
+    public function isEmailUnique($email, $excludeUserId = null)
     {
         $conditions = ['email' => $email];
         if ($excludeUserId) {
@@ -287,7 +202,7 @@ class DatabaseValidator
         return true;
     }
 
-    public function validateUniqueUsername($username, $excludeUserId = null)
+    public function isUsernameUnique($username, $excludeUserId = null)
     {
         $conditions = ['username' => $username];
         if ($excludeUserId) {
@@ -303,7 +218,7 @@ class DatabaseValidator
         return true;
     }
 
-    public function validateUniqueStudentId($studentId, $excludeStudentId = null)
+    public function isStudentIdUnique($studentId, $excludeStudentId = null)
     {
         $conditions = ['student_id' => $studentId];
         if ($excludeStudentId) {
@@ -319,12 +234,12 @@ class DatabaseValidator
         return true;
     }
 
-    public function validateDepartmentExists($departmentId)
+    public function departmentExists($departmentId)
     {
         return $this->db->exists('departments', ['id' => $departmentId, 'status' => 'active']);
     }
 
-    public function validateUserExists($userId)
+    public function userExists($userId)
     {
         return $this->db->exists('users', ['id' => $userId, 'status' => 'active']);
     }
@@ -344,7 +259,6 @@ class SecurityValidator
 
     public static function checkRateLimit($identifier, $maxAttempts = 5, $timeWindow = 300)
     {
-        // Simple rate limiting implementation
         $key = "rate_limit_" . $identifier;
         $attempts = $_SESSION[$key] ?? [];
 
