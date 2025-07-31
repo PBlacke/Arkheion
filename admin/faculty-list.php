@@ -59,11 +59,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Selected department is not valid");
         }
 
+        $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
+
         // If validation passes, process the form
         $new_user_id = $db->addUser(
             $data['username'],
             $data['email'],
-            $data['password']
+            $hashedPassword
         );
 
         $faculty_id = $db->addFaculty(
