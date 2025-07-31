@@ -1,5 +1,4 @@
 <?php
-// Include the connection file
 require_once '../config/connection.php';
 require_once '../includes/database.php';
 
@@ -34,36 +33,24 @@ $current_user = getLoggedInUser($db);
                 <li>
                     <a href="./faculty-list.php">
                         <i class="fa fa-dashboard fa-fw"></i>
-                        <p class="list">Faculty List</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="dashboard.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
                         <p class="list">Student List</p>
                     </a>
                 </li>
                 <li>
                     <a href="dashboard.php">
                         <i class="fa fa-dashboard fa-fw"></i>
-                        <p class="list">Papers List</p>
+                        <p class="list">Pending Student List</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="dashboard.php">
+                        <i class="fa fa-dashboard fa-fw"></i>
+                        <p class="list">Archive List</p>
                     </a>
                 </li>
             </ul>
             <ul class="menu rounded-box w-full">
                 <li class="menu menu-title">Settings</li>
-                <li>
-                    <a href="./department-list.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
-                        <p class="list">Department List</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="./department-list.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
-                        <p class="list">Schools List</p>
-                    </a>
-                </li>
                 <li>
                     <a href="dashboard.php">
                         <i class="fa fa-dashboard fa-fw"></i>

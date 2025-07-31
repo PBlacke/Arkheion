@@ -1,157 +1,25 @@
 <?php
-// Start the session at the very beginning
 session_start();
-
-// Include the connection file
-require 'config/connection.php';
-
-// Check if the user is logged in and session is valid
-if (!isset($_SESSION['employee_id']) || !isset($_SESSION['username']) || !isset($_SESSION['last_activity'])) {
-    // Redirect to the login page if the session is invalid
-    header("Location: facultylogin.php");
-    exit();
-}
-
-// Check for session timeout (30 minutes)
-$timeout = 30 * 60; // 30 minutes in seconds
-if (time() - $_SESSION['last_activity'] > $timeout) {
-    // Session has expired
-    session_unset();
-    session_destroy();
-    header("Location: facultylogin.php?timeout=1");
-    exit();
-}
-
-// Update last activity time
-$_SESSION['last_activity'] = time();
-
-// Retrieve user information based on the stored employee_id
-$employeeId = $_SESSION['employee_id'];
-$stmt = $conn->prepare("SELECT username, email, department FROM faculty WHERE id = ? AND username = ?");
-$stmt->bind_param("is", $employeeId, $_SESSION['username']);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $username = $row['username'];
-    $email = $row['email'];
-    $department = $row['department'];
-} else {
-    // If user data cannot be found, session might be invalid
-    session_unset();
-    session_destroy();
-    header("Location: facultylogin.php?error=invalid_session");
-    exit();
-}
-
-$stmt->close();
-
-// Define the number of records per page
-$recordsPerPage = 10;
-
-// Determine the current page number
-$current_page = isset($_GET['page']) ? $_GET['page'] : 1;
-
-// Calculate the offset for the SQL query
-$offset = ($current_page - 1) * $recordsPerPage;
-
-// Define the status you want to display (e.g., PUBLISHED)
-$statusToDisplay = 'Unpublish';
-
-// Query to fetch data from the database with pagination and status filter
-$query = "SELECT * FROM files WHERE status = '$statusToDisplay' AND department = '$department' LIMIT $offset, $recordsPerPage";
-$result = $conn->query($query);
-
-// Check if there are any rows in the result
-$rows = [];
-if ($result->num_rows > 0) {
-    // Fetch all rows and store them in the $rows array
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
-    }
-}
-
-// Query to get the total number of records for pagination with status filter
-$totalRecordsQuery = "SELECT COUNT(*) as total FROM files WHERE status = '$statusToDisplay' AND department = '$department'";
-$totalRecordsResult = $conn->query($totalRecordsQuery);
-$totalRecords = $totalRecordsResult->fetch_assoc()['total'];
-
-// Calculate the total number of pages
-$totalPages = ceil($totalRecords / $recordsPerPage);
-
-// Close the connection
-$conn->close();
+require_once '../config/auth.php';
 ?>
+
 <!DOCTYPE html>
-<html>
+<html data-theme="ark">
 
 <head>
     <title>Arkheion</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="x-icon" href="image/favicon.png">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        html,
-        body,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            font-family: "Roboto", sans-serif
-        }
-
-        .modal-header {
-            background-color: maroon;
-            color: white;
-        }
-
-        .btn-close {
-            filter: brightness(0) invert(1);
-        }
-
-        .modal-content {
-            border-radius: 15px;
-        }
-
-        .btn-success {
-            background-color: #28a745;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-        }
-
-        .table th {
-            background-color: #f8f9fa;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/output.css">
 </head>
 
-<body class="w3-light-grey">
+<body>
+    <main class="flex justify-center min-h-screen p-4 bg-base-200">
+        <div class="grid grid-cols-dashboard gap-4 w-full">
+            <?php include 'includes/nav.php'; ?>
 
-    <!-- Page Container -->
-    <div class="w3-content w3-margin-top" style="max-width:1400px;">
-
-        <!-- The Grid -->
-        <div class="w3-row-padding">
-
-            <!-- Left Column -->
-            <div class="w3-third">
-                <?php include 'fac_nav.php'; ?>
-                <!-- End Left Column -->
-            </div>
-
-            <!-- Right Column -->
-            <div class="w3-twothird">
-
+            <div class="flex flex-col gap-4 p-8 bg-base-100 rounded-box shadow-lg">
                 <div class="w3-container w3-card w3-white w3-margin-bottom">
                     <h2 style="color: red;" class="w3-padding-16"><i class="fa fa-dashboard fa-fw"></i>Dashboard</h2>
                     <div class="w3-container">
