@@ -31,13 +31,13 @@ $current_user = getLoggedInUser($db);
                     </a>
                 </li>
                 <li>
-                    <a href="./faculty-list.php">
+                    <a href="./students-list.php">
                         <i class="fa fa-dashboard fa-fw"></i>
                         <p class="list">Student List</p>
                     </a>
                 </li>
                 <li>
-                    <a href="dashboard.php">
+                    <a href="./pending-students-list.php">
                         <i class="fa fa-dashboard fa-fw"></i>
                         <p class="list">Pending Student List</p>
                     </a>
