@@ -68,7 +68,7 @@ $current_user = getLoggedInUser($db);
                 </li>
             </ul>
         </div>
-        <div class="mx-4 my-2">
+        <div class="m-4">
             <a href="../auth/logout.php" class="btn btn-primary w-full">
                 <i class="fa fa-dashboard fa-fw"></i>
                 <p class="list">Logout</p>

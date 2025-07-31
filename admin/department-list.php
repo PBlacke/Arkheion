@@ -78,7 +78,8 @@ $csrf_token = SecurityValidator::generateCSRFToken();
 <body>
     <main class="flex justify-center min-h-screen p-4 bg-base-200">
         <div class="grid grid-cols-dashboard gap-4 w-full">
-            <?php include './nav.php'; ?>
+            <?php include 'includes/nav.php'; ?>
+
 
             <div class="flex flex-col gap-4 p-8 bg-base-100 rounded-box shadow-lg">
                 <div class="flex justify-between items-center w-full">

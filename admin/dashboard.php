@@ -56,7 +56,7 @@ $totalPages = ceil($totalRecords / $recordsPerPage);
 <body>
     <main class="flex justify-center min-h-screen px-8 bg-base-200">
         <div class="grid grid-cols-dashboard gap-8 w-full max-w-[1440px]">
-            <?php include './nav.php'; ?>
+            <?php include 'includes/nav.php'; ?>
 
             <div class="bg-base-100 w-full">
                 <div class="w3-container w3-card w3-white w3-margin-bottom">
