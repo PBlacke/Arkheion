@@ -192,6 +192,25 @@ class DatabaseHelper
         ]);
     }
 
+    public function addPendingStudent($username, $password, $email, $first_name, $middle_name, $last_name, $suffix, $birthdate, $address, $educational_attainment, $department_id, $status = "Pending", $registration_date)
+    {
+        return $this->insert('pending_students', [
+            'username' => $username,
+            'password' => $password,
+            'email' => $email,
+            'first_name' => $first_name,
+            'middle_name' => $middle_name,
+            'last_name' => $last_name,
+            'suffix' => $suffix,
+            'birthdate' => $birthdate,
+            'address' => $address,
+            'educational_attainment' => $educational_attainment,
+            'department_id' => $department_id,
+            'status' => $status,
+            'registration_date' => $registration_date
+        ]);
+    }
+
     public function getFacultyByStatus($statuses = [])
     {
         if (empty($statuses)) {
