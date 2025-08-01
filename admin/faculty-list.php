@@ -14,11 +14,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Invalid request. Please try again.");
         }
 
-        // Rate limiting (optional)
-        if (!SecurityValidator::checkRateLimit($_SERVER['REMOTE_ADDR'] . '_faculty_add', 3, 300)) {
-            throw new Exception("Too many attempts. Please wait 5 minutes before trying again.");
-        }
-
         // Initialize validators
         $validator = new FormValidator($_POST);
         $dbValidator = new DatabaseValidator($db);
@@ -59,13 +54,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Selected department is not valid");
         }
 
-        $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
-
         // If validation passes, process the form
         $new_user_id = $db->addUser(
             $data['username'],
             $data['email'],
-            $hashedPassword
+            $_POST['password'],
         );
 
         $faculty_id = $db->addFaculty(

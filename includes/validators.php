@@ -62,7 +62,7 @@ class FormValidator
         return $this;
     }
 
-    public function validateDate($field, $fieldName = null)
+    public function validateDate($field, $fieldName = null, $minAge = 18, $maxAge = 100)
     {
         $value = $this->data[$field] ?? '';
         $fieldName = $fieldName ?: ucfirst(str_replace('_', ' ', $field));
@@ -77,8 +77,8 @@ class FormValidator
 
                 if ($dateObj > $today) {
                     $this->errors[] = "$fieldName cannot be in the future";
-                } elseif ($age > 100 || $age < 18) {
-                    $this->errors[] = "$fieldName must be valid (18-100 years old)";
+                } elseif ($age > $maxAge || $age < $minAge) {
+                    $this->errors[] = "$fieldName must be valid ($minAge-$maxAge years old)";
                 }
             }
         }

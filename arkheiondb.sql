@@ -57,7 +57,7 @@ CREATE TABLE
         `middle_name` VARCHAR(50),
         `last_name` VARCHAR(50) NOT NULL,
         `suffix` VARCHAR(10),
-        `date_of_birth` DATE NOT NULL,
+        `birthdate` DATE NOT NULL,
         `address` TEXT NOT NULL,
         `educational_attainment` ENUM (
             'Elementary',
@@ -82,7 +82,7 @@ CREATE TABLE
         `middle_name` VARCHAR(50),
         `last_name` VARCHAR(50) NOT NULL,
         `suffix` VARCHAR(10),
-        `date_of_birth` DATE NOT NULL,
+        `birthdate` DATE NOT NULL,
         `address` TEXT NOT NULL,
         `educational_attainment` ENUM (
             'Elementary',
