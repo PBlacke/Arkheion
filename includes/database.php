@@ -161,12 +161,23 @@ class DatabaseHelper
         return $this->executeCustomQuery($sql, $filters);
     }
 
+    private function isPasswordHashed($password)
+    {
+        // Bcrypt hashes are exactly 60 characters and start with $2y$
+        return strlen($password) === 60 && substr($password, 0, 4) === '$2y$';
+    }
+
     public function addUser($username, $email, $password, $role = 'faculty', $status = 'active')
     {
+        // Check if password is already hashed
+        $hashedPassword = $this->isPasswordHashed($password)
+            ? $password
+            : password_hash($password, PASSWORD_DEFAULT);
+
         return $this->insert('users', [
             'username' => $username,
             'email' => $email,
-            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'password' => $hashedPassword,
             'role' => $role,
             'status' => $status,
         ]);
