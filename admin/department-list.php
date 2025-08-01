@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $data = $validator->getSanitizedData();
 
         // Process the form
-        $new_user_id = $db->addDepartment(
+        $db->addDepartment(
             $_POST['department_code'],
             $_POST['department_name'],
             $_POST['description'],

@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_POST['password'],
         );
 
-        $faculty_id = $db->addFaculty(
+        $db->addFaculty(
             $new_user_id,
             $data['first_name'],
             $data['middle_name'],
