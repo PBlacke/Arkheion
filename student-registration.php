@@ -59,15 +59,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Selected department is not valid.");
         }
 
-        // Begin transaction
-        $conn->begin_transaction();
+        $hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-        // Hash the password
-        $hashedPassword = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
-
-        $faculty_id = $db->addPendingStudent(
+        $db->addPendingStudent(
             $data['username'],
-            $hashedPassword,
+            $hashed_password,
             $data['email'],
             $data['first_name'],
             $data['middle_name'],
@@ -77,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $data['address'],
             $data['educational_attainment'],
             $data['department_id'],
-            $data['status'],
+            "Pending",
             date('Y-m-d')
         );
 
@@ -142,6 +138,7 @@ $departments = $db->getDepartments(true); // Get only active departments
                 <input type="text" name="username" class="input w-full" placeholder="Username" required>
                 <input type="email" name="email" class="input w-full" placeholder="Email" required>
                 <input type="password" name="password" class="input w-full" placeholder="Password" required>
+                <input type="password" name="confirm_password" class="input w-full" placeholder="Confirm Password" required>
 
                 <p class="text-sm mt-2 ml-2">Student Information</p>
                 <div class="grid grid-cols-2 gap-2 w-full">
