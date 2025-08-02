@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once '../config/auth.php';
+
+requireRole(['admin', 'faculty']);
 ?>
 
 <!DOCTYPE html>

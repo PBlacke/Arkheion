@@ -3,10 +3,11 @@ session_start();
 require '../config/connection.php';
 require_once '../config/auth.php';
 require '../includes/database.php';
-require '../includes/validators.php'; // Include the validator file
+require '../includes/validators.php';
 
-requireRole(['admin']);
+requireRole(['admin', 'faculty']);
 
+// Handle student actions (if needed - like deactivating accounts)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         // CSRF protection
@@ -14,49 +15,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Invalid request. Please try again.");
         }
 
-        // Initialize validators
-        $validator = new FormValidator($_POST);
+        $action = $_POST['action'] ?? '';
+        $student_id = (int)($_POST['student_id'] ?? 0);
 
-        // Chain validation methods - only validate format/rules, not required fields
-        $validator->validateName('department_code', 'Department Code')
-            ->validateName('department_name', 'Department Name')
-            ->validateCustom('description', function ($value) {
-                return strlen($value) <= 255;
-            }, 'Description must be 255 characters or less')
-            ->validateName('status', 'Status');
-
-        // Check if basic validation passed
-        if (!$validator->isValid()) {
-            throw new Exception($validator->getErrorsAsString());
+        if (!$student_id || !in_array($action, ['activate', 'deactivate'])) {
+            throw new Exception("Invalid action or student ID.");
         }
 
-        // Get sanitized data
-        $data = $validator->getSanitizedData();
+        // Get the student data
+        $student = $db->getStudent($student_id);
+        if (!$student) {
+            throw new Exception("Student not found.");
+        }
 
-        // Process the form
-        $new_user_id = $db->addDepartment(
-            $_POST['department_code'],
-            $_POST['department_name'],
-            $_POST['description'],
-            !empty($_POST['head_faculty_id']) ? $_POST['head_faculty_id'] : null,
-            $_POST['status']
+        // Update user status
+        $new_status = ($action === 'activate') ? 'active' : 'inactive';
+        $db->update(
+            'users',
+            ['status' => $new_status],
+            ['id' => $student['user_id']]
         );
 
-        // Set success message in session
-        $_SESSION['success_message'] = "Faculty member added successfully!";
+        $action_text = ($action === 'activate') ? 'activated' : 'deactivated';
+        $_SESSION['success_message'] = "Student account {$action_text} successfully!";
 
-        // Redirect to prevent resubmission
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     } catch (Exception $e) {
-        // Set error message in session
-        $_SESSION['error_message'] = "Error adding faculty: " . $e->getMessage();
+        $_SESSION['error_message'] = $e->getMessage();
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     }
 }
 
-$departments = $db->getDepartments();
+// Get all students
+$students = $db->getStudents();
 
 // Get messages from session and clear them
 $success_message = $_SESSION['success_message'] ?? null;
@@ -71,7 +64,7 @@ $csrf_token = SecurityValidator::generateCSRFToken();
 <html data-theme="ark">
 
 <head>
-    <title>Department List - Arkheion</title>
+    <title>Students List - Arkheion</title>
     <link rel="stylesheet" href="../css/output.css">
 </head>
 
@@ -80,11 +73,23 @@ $csrf_token = SecurityValidator::generateCSRFToken();
         <div class="grid grid-cols-dashboard gap-4 w-full">
             <?php include 'includes/nav.php'; ?>
 
-
             <div class="flex flex-col gap-4 p-8 bg-base-100 rounded-box shadow-lg">
                 <div class="flex justify-between items-center w-full">
-                    <h1 class="text-2xl font-bold">Department List</h1>
-                    <label for="add_department_modal" class="btn btn-primary">Add Faculty</label>
+                    <h1 class="text-2xl font-bold">Students List</h1>
+                    <div class="flex gap-2 items-center">
+                        <div class="text-sm text-base-content/70">
+                            <?php echo count($students); ?> total students
+                        </div>
+                        <!-- Optional: Add filter buttons -->
+                        <div class="dropdown dropdown-end">
+                            <label tabindex="0" class="btn btn-outline btn-sm">Filter</label>
+                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                                <li><a href="?filter=all">All Students</a></li>
+                                <li><a href="?filter=active">Active Only</a></li>
+                                <li><a href="?filter=inactive">Inactive Only</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Success Message -->
@@ -101,69 +106,148 @@ $csrf_token = SecurityValidator::generateCSRFToken();
                     </div>
                 <?php endif; ?>
 
-                <div class="overflow-x-auto">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Code</th>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Head Faculty</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            foreach ($departments as $department) {
-                                echo "<tr>";
-                                echo "<td>{$department['id']}</td>";
-                                echo "<td>" . htmlspecialchars($department['department_code']) . "</td>";
-                                echo "<td>" . htmlspecialchars($department['department_name']) . "</td>";
-                                echo "<td>" . htmlspecialchars($department['description']) . "</td>";
-                                echo "<td>" . htmlspecialchars($department['head_faculty_id']) . "</td>";
-                                echo "<td>" . htmlspecialchars($department['status']) . "</td>";
-                                echo "</tr>";
-                            }
-                            ?>
-                        </tbody>
-                    </table>
+                <?php if (empty($students)): ?>
+                    <div class="alert alert-info">
+                        <span>No students found in the system.</span>
+                    </div>
+                <?php else: ?>
+                    <div class="overflow-x-auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Birthdate</th>
+                                    <th>Educational Attainment</th>
+                                    <th>Department</th>
+                                    <th>Account Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($students as $student): ?>
+                                    <tr class="<?php echo $student['account_status'] === 'inactive' ? 'opacity-60' : ''; ?>">
+                                        <td><?php echo $student['id']; ?></td>
+                                        <td><?php echo htmlspecialchars($student['username']); ?></td>
+                                        <td>
+                                            <?php
+                                            $fullName = trim(
+                                                htmlspecialchars($student['first_name']) . ' ' .
+                                                    htmlspecialchars($student['middle_name']) . ' ' .
+                                                    htmlspecialchars($student['last_name']) . ' ' .
+                                                    htmlspecialchars($student['suffix'])
+                                            );
+                                            echo $fullName;
+                                            ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($student['email']); ?></td>
+                                        <td><?php echo date('M j, Y', strtotime($student['birthdate'])); ?></td>
+                                        <td><?php echo htmlspecialchars($student['educational_attainment']); ?></td>
+                                        <td><?php echo htmlspecialchars($student['department_name']); ?></td>
+                                        <td>
+                                            <span class="badge <?php echo $student['account_status'] === 'active' ? 'badge-success' : 'badge-error'; ?>">
+                                                <?php echo ucfirst($student['account_status']); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <!-- Toggle Status Button -->
+                                                <?php if ($student['account_status'] === 'active'): ?>
+                                                    <form method="POST" style="display: inline;">
+                                                        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                                                        <input type="hidden" name="action" value="deactivate">
+                                                        <input type="hidden" name="student_id" value="<?php echo $student['id']; ?>">
+                                                        <button type="submit"
+                                                            class="btn btn-warning btn-sm"
+                                                            onclick="return confirm('Are you sure you want to deactivate this student account?')">
+                                                            Deactivate
+                                                        </button>
+                                                    </form>
+                                                <?php else: ?>
+                                                    <form method="POST" style="display: inline;">
+                                                        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                                                        <input type="hidden" name="action" value="activate">
+                                                        <input type="hidden" name="student_id" value="<?php echo $student['id']; ?>">
+                                                        <button type="submit"
+                                                            class="btn btn-success btn-sm"
+                                                            onclick="return confirm('Are you sure you want to activate this student account?')">
+                                                            Activate
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
+
+                                                <!-- View Details Button -->
+                                                <label for="details_modal_<?php echo $student['id']; ?>" class="btn btn-info btn-sm">
+                                                    Details
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Details Modal for each student -->
+                                    <input type="checkbox" id="details_modal_<?php echo $student['id']; ?>" class="modal-toggle" />
+                                    <div class="modal" role="dialog">
+                                        <div class="modal-box">
+                                            <h3 class="text-lg font-bold">Student Details</h3>
+                                            <div class="py-4 space-y-2">
+                                                <p><strong>Student ID:</strong> <?php echo $student['id']; ?></p>
+                                                <p><strong>Username:</strong> <?php echo htmlspecialchars($student['username']); ?></p>
+                                                <p><strong>Email:</strong> <?php echo htmlspecialchars($student['email']); ?></p>
+                                                <p><strong>Full Name:</strong> <?php echo $fullName; ?></p>
+                                                <p><strong>Birthdate:</strong> <?php echo date('F j, Y', strtotime($student['birthdate'])); ?></p>
+                                                <p><strong>Age:</strong>
+                                                    <?php
+                                                    $birthdate = new DateTime($student['birthdate']);
+                                                    $today = new DateTime();
+                                                    $age = $today->diff($birthdate)->y;
+                                                    echo $age . ' years old';
+                                                    ?>
+                                                </p>
+                                                <p><strong>Address:</strong> <?php echo htmlspecialchars($student['address']); ?></p>
+                                                <p><strong>Educational Attainment:</strong> <?php echo htmlspecialchars($student['educational_attainment']); ?></p>
+                                                <p><strong>Department:</strong> <?php echo htmlspecialchars($student['department_name']); ?></p>
+                                                <p><strong>Account Status:</strong>
+                                                    <span class="badge <?php echo $student['account_status'] === 'active' ? 'badge-success' : 'badge-error'; ?>">
+                                                        <?php echo ucfirst($student['account_status']); ?>
+                                                    </span>
+                                                </p>
+                                            </div>
+                                            <div class="modal-action">
+                                                <label for="details_modal_<?php echo $student['id']; ?>" class="btn">Close</label>
+                                            </div>
+                                        </div>
+                                        <label class="modal-backdrop" for="details_modal_<?php echo $student['id']; ?>">Close</label>
+                                    </div>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Statistics Card (Optional) -->
+                <div class="stats shadow">
+                    <div class="stat">
+                        <div class="stat-title">Total Students</div>
+                        <div class="stat-value"><?php echo count($students); ?></div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">Active Students</div>
+                        <div class="stat-value text-success">
+                            <?php echo count(array_filter($students, fn($s) => $s['account_status'] === 'active')); ?>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">Inactive Students</div>
+                        <div class="stat-value text-error">
+                            <?php echo count(array_filter($students, fn($s) => $s['account_status'] === 'inactive')); ?>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
-
-    <input type="checkbox" id="add_department_modal" class="modal-toggle" />
-    <div class="modal" role="dialog">
-        <form action="" method="POST" class="flex flex-col gap-2 modal-box">
-            <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-
-            <h2 class="text-lg font-bold">Add Faculty</h2>
-            <div class="grid grid-cols-2 gap-2 w-full">
-                <input type="text" name="department_code" class="input w-full" placeholder="Code" required>
-                <input type="text" name="department_name" class="input w-full" placeholder="Name" required>
-            </div>
-            <input type="text" name="description" class="input w-full" placeholder="Description" required>
-            <div class="grid grid-cols-2 gap-2 w-full">
-                <select name="head_faculty_id" class="select w-full">
-                    <option value="" selected>Faculty Head (optional)</option>
-                    <?php
-                    $faculties = $db->getFacultyByStatus(["active", "on_leave"]);
-
-                    foreach ($faculties as $faculty) {
-                        echo "<option value=\"{$faculty['id']}\">" . htmlspecialchars($faculty['first_name']) . "</option>";
-                    }
-                    ?>
-                </select>
-                <select name="status" class="select w-full" required>
-                    <option value="active" selected>Active</option>
-                    <option value="inactive">Inactive</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit Faculty</button>
-        </form>
-        <label class="modal-backdrop" for="add_department_modal">Close</label>
-    </div>
 </body>
 
 </html>

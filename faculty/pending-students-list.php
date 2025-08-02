@@ -3,10 +3,11 @@ session_start();
 require '../config/connection.php';
 require_once '../config/auth.php';
 require '../includes/database.php';
-require '../includes/validators.php'; // Include the validator file
+require '../includes/validators.php';
 
-requireRole(['admin']);
+requireRole(['admin', 'faculty']);
 
+// Handle approval/rejection actions
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         // CSRF protection
@@ -14,56 +15,102 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Invalid request. Please try again.");
         }
 
-        // Initialize validators
-        $validator = new FormValidator($_POST);
+        $action = $_POST['action'] ?? '';
+        $student_id = (int)($_POST['student_id'] ?? 0);
 
-        // Chain validation methods - only validate format/rules, not required fields
-        $validator->validateName('department_code', 'Department Code')
-            ->validateName('department_name', 'Department Name')
-            ->validateCustom('description', function ($value) {
-                return strlen($value) <= 255;
-            }, 'Description must be 255 characters or less')
-            ->validateName('status', 'Status');
-
-        // Check if basic validation passed
-        if (!$validator->isValid()) {
-            throw new Exception($validator->getErrorsAsString());
+        if (!$student_id || !in_array($action, ['approve', 'reject'])) {
+            throw new Exception("Invalid action or student ID.");
         }
 
-        // Get sanitized data
-        $data = $validator->getSanitizedData();
+        // Get the pending student data
+        $pending_student = $db->fetchById('pending_students', $student_id);
+        if (!$pending_student) {
+            throw new Exception("Pending student not found.");
+        }
 
-        // Process the form
-        $new_user_id = $db->addDepartment(
-            $_POST['department_code'],
-            $_POST['department_name'],
-            $_POST['description'],
-            !empty($_POST['head_faculty_id']) ? $_POST['head_faculty_id'] : null,
-            $_POST['status']
-        );
+        // Check if already processed
+        if ($pending_student['status'] !== 'Pending') {
+            throw new Exception("This student registration has already been processed.");
+        }
 
-        // Set success message in session
-        $_SESSION['success_message'] = "Faculty member added successfully!";
+        if ($action === 'approve') {
+            // Begin transaction for approval process
+            $conn->begin_transaction();
 
-        // Redirect to prevent resubmission
+            try {
+                // Create user account (addUser will detect password is already hashed)
+                $user_id = $db->addUser(
+                    $pending_student['username'],
+                    $pending_student['email'],
+                    $pending_student['password'], // Already hashed from registration
+                    'student',
+                    'active'
+                );
+
+                // Create student record
+                $student_id = $db->insert('students', [
+                    'user_id' => $user_id,
+                    'first_name' => $pending_student['first_name'],
+                    'middle_name' => $pending_student['middle_name'],
+                    'last_name' => $pending_student['last_name'],
+                    'suffix' => $pending_student['suffix'],
+                    'birthdate' => $pending_student['birthdate'],
+                    'address' => $pending_student['address'],
+                    'educational_attainment' => $pending_student['educational_attainment'],
+                    'department_id' => $pending_student['department_id']
+                ]);
+
+                // Update pending student status
+                $db->update(
+                    'pending_students',
+                    ['status' => 'Approved'],
+                    ['id' => $pending_student['id']]
+                );
+
+                // Optional: Create notification for the student
+                $db->insert('notifications', [
+                    'recipient_id' => $user_id,
+                    'title' => 'Registration Approved',
+                    'message' => 'Your student registration has been approved. You can now log in to the system.',
+                    'type' => 'account_approved',
+                    'priority' => 'normal'
+                ]);
+
+                $conn->commit();
+                $_SESSION['success_message'] = "Student registration approved successfully!";
+            } catch (Exception $e) {
+                $conn->rollback();
+                throw $e;
+            }
+        } elseif ($action === 'reject') {
+            // Update pending student status to rejected
+            $db->update(
+                'pending_students',
+                ['status' => 'Rejected'],
+                ['id' => $pending_student['id']]
+            );
+
+            $_SESSION['success_message'] = "Student registration rejected.";
+        }
+
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     } catch (Exception $e) {
-        // Set error message in session
-        $_SESSION['error_message'] = "Error adding faculty: " . $e->getMessage();
+        $_SESSION['error_message'] = $e->getMessage();
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     }
 }
-
-$departments = $db->getDepartments();
 
 // Get messages from session and clear them
 $success_message = $_SESSION['success_message'] ?? null;
 $error_message = $_SESSION['error_message'] ?? null;
 unset($_SESSION['success_message'], $_SESSION['error_message']);
 
-// Generate CSRF token for the form
+// Get pending students (only those with 'Pending' status)
+$pending_students = $db->getPendingStudents('Pending');
+
+// Generate CSRF token
 $csrf_token = SecurityValidator::generateCSRFToken();
 ?>
 
@@ -71,7 +118,7 @@ $csrf_token = SecurityValidator::generateCSRFToken();
 <html data-theme="ark">
 
 <head>
-    <title>Department List - Arkheion</title>
+    <title>Pending Students - Arkheion</title>
     <link rel="stylesheet" href="../css/output.css">
 </head>
 
@@ -80,11 +127,12 @@ $csrf_token = SecurityValidator::generateCSRFToken();
         <div class="grid grid-cols-dashboard gap-4 w-full">
             <?php include 'includes/nav.php'; ?>
 
-
             <div class="flex flex-col gap-4 p-8 bg-base-100 rounded-box shadow-lg">
                 <div class="flex justify-between items-center w-full">
-                    <h1 class="text-2xl font-bold">Department List</h1>
-                    <label for="add_department_modal" class="btn btn-primary">Add Faculty</label>
+                    <h1 class="text-2xl font-bold">Pending Students List</h1>
+                    <div class="text-sm text-base-content/70">
+                        <?php echo count($pending_students); ?> pending registrations
+                    </div>
                 </div>
 
                 <!-- Success Message -->
@@ -101,69 +149,109 @@ $csrf_token = SecurityValidator::generateCSRFToken();
                     </div>
                 <?php endif; ?>
 
-                <div class="overflow-x-auto">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Code</th>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Head Faculty</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            foreach ($departments as $department) {
-                                echo "<tr>";
-                                echo "<td>{$department['id']}</td>";
-                                echo "<td>" . htmlspecialchars($department['department_code']) . "</td>";
-                                echo "<td>" . htmlspecialchars($department['department_name']) . "</td>";
-                                echo "<td>" . htmlspecialchars($department['description']) . "</td>";
-                                echo "<td>" . htmlspecialchars($department['head_faculty_id']) . "</td>";
-                                echo "<td>" . htmlspecialchars($department['status']) . "</td>";
-                                echo "</tr>";
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
+                <?php if (empty($pending_students)): ?>
+                    <div class="alert alert-info">
+                        <span>No pending student registrations at this time.</span>
+                    </div>
+                <?php else: ?>
+                    <div class="overflow-x-auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Educational Attainment</th>
+                                    <th>Department</th>
+                                    <th>Registration Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($pending_students as $pending_student): ?>
+                                    <?php $department = $db->getDepartment($pending_student['department_id']); ?>
+                                    <tr>
+                                        <td><?php echo $pending_student['id']; ?></td>
+                                        <td><?php echo htmlspecialchars($pending_student['username']); ?></td>
+                                        <td>
+                                            <?php
+                                            $fullName = trim(
+                                                htmlspecialchars($pending_student['first_name']) . ' ' .
+                                                    htmlspecialchars($pending_student['middle_name']) . ' ' .
+                                                    htmlspecialchars($pending_student['last_name']) . ' ' .
+                                                    htmlspecialchars($pending_student['suffix'])
+                                            );
+                                            echo $fullName;
+                                            ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($pending_student['email']); ?></td>
+                                        <td><?php echo htmlspecialchars($pending_student['educational_attainment']); ?></td>
+                                        <td><?php echo htmlspecialchars($department['department_name'] ?? 'Unknown'); ?></td>
+                                        <td><?php echo date('M j, Y', strtotime($pending_student['registration_date'])); ?></td>
+                                        <td>
+                                            <div class="flex gap-2">
+                                                <!-- Approve Button -->
+                                                <form method="POST" style="display: inline;">
+                                                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                                                    <input type="hidden" name="action" value="approve">
+                                                    <input type="hidden" name="student_id" value="<?php echo $pending_student['id']; ?>">
+                                                    <button type="submit"
+                                                        class="btn btn-success btn-sm"
+                                                        onclick="return confirm('Are you sure you want to approve this student registration?')">
+                                                        Approve
+                                                    </button>
+                                                </form>
+
+                                                <!-- Reject Button -->
+                                                <form method="POST" style="display: inline;">
+                                                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                                                    <input type="hidden" name="action" value="reject">
+                                                    <input type="hidden" name="student_id" value="<?php echo $pending_student['id']; ?>">
+                                                    <button type="submit"
+                                                        class="btn btn-error btn-sm"
+                                                        onclick="return confirm('Are you sure you want to reject this student registration?')">
+                                                        Reject
+                                                    </button>
+                                                </form>
+
+                                                <!-- View Details Button -->
+                                                <label for="details_modal_<?php echo $pending_student['id']; ?>" class="btn btn-info btn-sm">
+                                                    Details
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Details Modal for each student -->
+                                    <input type="checkbox" id="details_modal_<?php echo $pending_student['id']; ?>" class="modal-toggle" />
+                                    <div class="modal" role="dialog">
+                                        <div class="modal-box">
+                                            <h3 class="text-lg font-bold">Student Details</h3>
+                                            <div class="py-4 space-y-2">
+                                                <p><strong>Username:</strong> <?php echo htmlspecialchars($pending_student['username']); ?></p>
+                                                <p><strong>Email:</strong> <?php echo htmlspecialchars($pending_student['email']); ?></p>
+                                                <p><strong>Full Name:</strong> <?php echo $fullName; ?></p>
+                                                <p><strong>Birthdate:</strong> <?php echo date('F j, Y', strtotime($pending_student['birthdate'])); ?></p>
+                                                <p><strong>Address:</strong> <?php echo htmlspecialchars($pending_student['address']); ?></p>
+                                                <p><strong>Educational Attainment:</strong> <?php echo htmlspecialchars($pending_student['educational_attainment']); ?></p>
+                                                <p><strong>Department:</strong> <?php echo htmlspecialchars($department['department_name'] ?? 'Unknown'); ?></p>
+                                                <p><strong>Registration Date:</strong> <?php echo date('F j, Y g:i A', strtotime($pending_student['registration_date'])); ?></p>
+                                            </div>
+                                            <div class="modal-action">
+                                                <label for="details_modal_<?php echo $pending_student['id']; ?>" class="btn">Close</label>
+                                            </div>
+                                        </div>
+                                        <label class="modal-backdrop" for="details_modal_<?php echo $pending_student['id']; ?>">Close</label>
+                                    </div>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </main>
-
-    <input type="checkbox" id="add_department_modal" class="modal-toggle" />
-    <div class="modal" role="dialog">
-        <form action="" method="POST" class="flex flex-col gap-2 modal-box">
-            <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-
-            <h2 class="text-lg font-bold">Add Faculty</h2>
-            <div class="grid grid-cols-2 gap-2 w-full">
-                <input type="text" name="department_code" class="input w-full" placeholder="Code" required>
-                <input type="text" name="department_name" class="input w-full" placeholder="Name" required>
-            </div>
-            <input type="text" name="description" class="input w-full" placeholder="Description" required>
-            <div class="grid grid-cols-2 gap-2 w-full">
-                <select name="head_faculty_id" class="select w-full">
-                    <option value="" selected>Faculty Head (optional)</option>
-                    <?php
-                    $faculties = $db->getFacultyByStatus(["active", "on_leave"]);
-
-                    foreach ($faculties as $faculty) {
-                        echo "<option value=\"{$faculty['id']}\">" . htmlspecialchars($faculty['first_name']) . "</option>";
-                    }
-                    ?>
-                </select>
-                <select name="status" class="select w-full" required>
-                    <option value="active" selected>Active</option>
-                    <option value="inactive">Inactive</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit Faculty</button>
-        </form>
-        <label class="modal-backdrop" for="add_department_modal">Close</label>
-    </div>
 </body>
 
 </html>
