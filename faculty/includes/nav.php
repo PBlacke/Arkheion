@@ -26,25 +26,25 @@ $current_user = getLoggedInUser($db);
                 <li class="menu menu-title">Menu</li>
                 <li>
                     <a href="dashboard.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
+                        <i class="fa-solid fa-grip"></i>
                         <p class="list">Dashboard</p>
                     </a>
                 </li>
                 <li>
                     <a href="./students-list.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
+                        <i class="fa-solid fa-user"></i>
                         <p class="list">Student List</p>
                     </a>
                 </li>
                 <li>
                     <a href="./pending-students-list.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
+                        <i class="fa-solid fa-users"></i>
                         <p class="list">Pending Student List</p>
                     </a>
                 </li>
                 <li>
                     <a href="dashboard.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
+                        <i class="fa-solid fa-box-archive"></i>
                         <p class="list">Archive List</p>
                     </a>
                 </li>
@@ -53,7 +53,7 @@ $current_user = getLoggedInUser($db);
                 <li class="menu menu-title">Settings</li>
                 <li>
                     <a href="dashboard.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
+                        <i class="fa-solid fa-gear"></i>
                         <p class="list">Settings</p>
                     </a>
                 </li>
@@ -61,7 +61,7 @@ $current_user = getLoggedInUser($db);
         </div>
         <div class="m-4">
             <a href="../auth/logout.php" class="btn btn-primary w-full">
-                <i class="fa fa-dashboard fa-fw"></i>
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 <p class="list">Logout</p>
             </a>
         </div>

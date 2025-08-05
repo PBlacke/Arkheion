@@ -65,6 +65,7 @@ $csrf_token = SecurityValidator::generateCSRFToken();
 
 <head>
     <title>Students List - Arkheion</title>
+    <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="../css/output.css">
 </head>
 

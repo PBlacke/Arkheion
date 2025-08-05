@@ -27,25 +27,25 @@ $current_user = getLoggedInUser($db);
                 <li class="menu menu-title">Menu</li>
                 <li>
                     <a href="dashboard.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
+                        <i class="fa-solid fa-grip"></i>
                         <p class="list">Dashboard</p>
                     </a>
                 </li>
                 <li>
                     <a href="./faculty-list.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
+                        <i class="fa-solid fa-users"></i>
                         <p class="list">Faculty List</p>
                     </a>
                 </li>
                 <li>
                     <a href="dashboard.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
+                        <i class="fa-solid fa-user"></i>
                         <p class="list">Student List</p>
                     </a>
                 </li>
                 <li>
                     <a href="dashboard.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
+                        <i class="fa-solid fa-book"></i>
                         <p class="list">Papers List</p>
                     </a>
                 </li>
@@ -54,19 +54,19 @@ $current_user = getLoggedInUser($db);
                 <li class="menu menu-title">Settings</li>
                 <li>
                     <a href="./department-list.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
+                        <i class="fa-solid fa-building-user"></i>
                         <p class="list">Department List</p>
                     </a>
                 </li>
                 <li>
                     <a href="./department-list.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
+                        <i class="fa-solid fa-school"></i>
                         <p class="list">Schools List</p>
                     </a>
                 </li>
                 <li>
                     <a href="dashboard.php">
-                        <i class="fa fa-dashboard fa-fw"></i>
+                        <i class="fa-solid fa-gear"></i>
                         <p class="list">Settings</p>
                     </a>
                 </li>
@@ -74,7 +74,7 @@ $current_user = getLoggedInUser($db);
         </div>
         <div class="m-4">
             <a href="../auth/logout.php" class="btn btn-primary w-full">
-                <i class="fa fa-dashboard fa-fw"></i>
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 <p class="list">Logout</p>
             </a>
         </div>
