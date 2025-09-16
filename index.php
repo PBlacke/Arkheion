@@ -4,20 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="shortcut icon" type="x-icon" href="image/favicon.png">
+    <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="./css/output.css">
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <title>Arkheion</title>
 </head>
 
 <body>
     <?php include 'includes/header.php' ?>
+
+    <div class="hero min-h-screen" style="background-image: url(/Arkheion/image/background/hero-background.jpg);">
+        <div class="hero-overlay"></div>
+        <div class="hero-content text-neutral-content text-center">
+            <div class="max-w-md">
+                <h1 class="text-5xl font-bold">Arkheion</h1>
+                <p class="py-6">
+                    A Comprehensive Research Repository with Intelligent Analytics.
+                </p>
+                <button class="btn btn-primary">Get Started</button>
+            </div>
+        </div>
+    </div>
 
     <section class="flex bg-base-200">
         <div class="row">
@@ -102,7 +109,6 @@
         </div>
     </section>
 
-    <!-- featured section end -->
     <?php include 'includes/footer.php' ?>
 </body>
 

@@ -1,8 +1,8 @@
 <?php
 // Include required files
-require 'config/connection.php';
-require 'includes/database.php';
-require 'includes/validators.php';
+require '../config/connection.php';
+require '../includes/database.php';
+require '../includes/validators.php';
 
 session_start();
 
@@ -104,7 +104,7 @@ $departments = $db->getDepartments(true); // Get only active departments
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/output.css">
+    <link rel="stylesheet" href="../css/output.css">
     <title>Arkheion - Student Registration</title>
 </head>
 
@@ -177,7 +177,7 @@ $departments = $db->getDepartments(true); // Get only active departments
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit Registration</button>
-                <a href="index.php" class="link link-primary text-center">Return home!</a>
+                <a href="../index.php" class="link link-primary text-center">Return home!</a>
             </form>
         </div>
     </main>
