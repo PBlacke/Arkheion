@@ -1,0 +1,35 @@
+<svg width="400" height="150" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Large book icon for hero -->
+  <g transform="translate(200,60)">
+    <!-- Left pages with gradient effect -->
+    <defs>
+      <linearGradient id="bookGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+        <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    
+    <!-- Left pages -->
+    <path d="M-40,-20 Q-40,-30 -25,-30 Q-12,-25 0,-20" fill="none" stroke="url(#bookGradient)" stroke-width="3"/>
+    <path d="M-40,-10 Q-40,-20 -25,-20 Q-12,-15 0,-10" fill="none" stroke="url(#bookGradient)" stroke-width="3"/>
+    <path d="M-40,0 Q-40,-10 -25,-10 Q-12,-5 0,0" fill="none" stroke="url(#bookGradient)" stroke-width="3"/>
+    <path d="M-40,10 Q-40,0 -25,0 Q-12,5 0,10" fill="none" stroke="url(#bookGradient)" stroke-width="3"/>
+    <path d="M-40,20 Q-40,10 -25,10 Q-12,15 0,20" fill="none" stroke="url(#bookGradient)" stroke-width="3"/>
+    
+    <!-- Right pages -->
+    <path d="M0,-20 Q12,-25 25,-30 Q40,-30 40,-20" fill="none" stroke="url(#bookGradient)" stroke-width="3"/>
+    <path d="M0,-10 Q12,-15 25,-20 Q40,-20 40,-10" fill="none" stroke="url(#bookGradient)" stroke-width="3"/>
+    <path d="M0,0 Q12,-5 25,-10 Q40,-10 40,0" fill="none" stroke="url(#bookGradient)" stroke-width="3"/>
+    <path d="M0,10 Q12,5 25,0 Q40,0 40,10" fill="none" stroke="url(#bookGradient)" stroke-width="3"/>
+    <path d="M0,20 Q12,15 25,10 Q40,10 40,20" fill="none" stroke="url(#bookGradient)" stroke-width="3"/>
+    
+    <!-- Center binding with shadow effect -->
+    <line x1="0" y1="-30" x2="0" y2="35" stroke="#0f172a" stroke-width="4" opacity="0.3"/>
+    <line x1="0" y1="-30" x2="0" y2="35" stroke="url(#bookGradient)" stroke-width="3"/>
+  </g>
+  
+  <!-- Large ARKHEION text with shadow -->
+  <text x="200" y="120" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#0f172a" text-anchor="middle" letter-spacing="4px" opacity="0.2">ARKHEION</text>
+  <text x="200" y="118" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="url(#bookGradient)" text-anchor="middle" letter-spacing="4px">ARKHEION</text>
+</svg>
