@@ -82,7 +82,7 @@ function redirectToDashboard($role)
             header("Location: ../faculty/dashboard.php");
             break;
         case 'student':
-            header("Location: ../student/dashboard.php.php");
+            header("Location: ./student/dashboard.php");
             break;
         default:
             header("Location: index.php");
