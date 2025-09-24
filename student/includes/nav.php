@@ -32,9 +32,9 @@ $current_user = getLoggedInUser($db);
                     </a>
                 </li>
                 <li>
-                    <a href="dashboard.php">
+                    <a href="paper.php">
                         <i class="fa-solid fa-book"></i>
-                        <p class="list">Papers List</p>
+                        <p class="list">Paper</p>
                     </a>
                 </li>
                 <li>
